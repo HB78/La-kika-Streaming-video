@@ -1,36 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Title
 
-## Getting Started
+Lakika - site de streaming en ligne
 
-First, run the development server:
+## Scénario
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Le but de ce site est de créer un clone de netflix fonctionnel.
+Ce projet a été créé dans le but de mettre en pratique mes compétences en développement web et de fournir une expérience immersive similaire à celle de Netflix pour les utilisateurs.
+Avec une interface utilisateur conviviale et des fonctionnalités telles que la navigation, le visonnage de films ou série dans les sections films et séries.
+Ce clone de Netflix offre une expérience de streaming de contenu divertissante et fluide. Explorez notre catalogue de films et séries dès maintenant et plongez dans le monde du divertissement en ligne!"
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Les technologies misent en oeuvres
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Pour ce projet j'ai utilisé Nextjs 14 et toutes les fonctionnalités modernes offertes par Nextjs comme les server actions.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Pour la base de donnée j'ai utilisé l'ORM Prisma et une base de donnée en PostgreSQL.
 
-## Learn More
+Pour l'authentification c'est next-auth qui a été utilisé afin de centraliser toutes les données.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Pour le style j'ai utilisé Tailwind CSS qui permet de faire du CSS de manière moderne
