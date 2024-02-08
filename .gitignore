@@ -38,8 +38,8 @@ next-env.d.ts
 
 certificates
 
-# l'api
-app/api/
+# # l'api
+# app/api/
 
 # le dossier fetchs
 app/fetchs/
