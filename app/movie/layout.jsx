@@ -10,7 +10,7 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
 
-  if (session?.user?.isAdmin === false) {
+  if (session?.user?.isAdmin === false || !session) {
     //J'ai opté pour la redirction mais j'aurais pu aussi afficher un message d'erreur dans une div que j'a
     redirect("/");
   }

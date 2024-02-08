@@ -4,10 +4,12 @@
 
 export const fetchMovies = async () => {
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/video`,
+    `http://localhost:3000/api/video`,
     {
-      revalidate: 60,
-      tags: ["fetchMovies"],
+      next: {
+        tags: ["fetchMovies"],
+        revalidate: 6,
+      },
     },
     {
       method: "GET",
@@ -24,10 +26,12 @@ export const fetchMovies = async () => {
 //fonction pour fetcher les serie de la bdd je l'utilise dans la page pricipale à la racine du site dans le page.jsx
 export const fetchSeries = async () => {
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/serie`,
+    `http://localhost:3000/api/serie`,
     {
-      revalidate: 60,
-      tags: ["fetchSeries"],
+      next: {
+        tags: ["fetchSeries"],
+        revalidate: 6,
+      },
     },
     {
       method: "GET",

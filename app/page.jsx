@@ -47,7 +47,7 @@ export default async function Home() {
       <Row rowID="3" title="Trending" moviesFetched={trending} />
       <Row rowID="4" title="Top Rated" moviesFetched={topRated} />
       <Row rowID="6" title="Films" moviesFetched={responseDataMovies} />
-      <Row rowID="7" title="Serie" moviesFetched={responseDataSeries} />
+      <Row rowID="7" title="Series" moviesFetched={responseDataSeries} />
     </main>
   );
 }

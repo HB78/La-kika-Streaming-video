@@ -1,6 +1,4 @@
-# Project Title
-
-Lakika - site de streaming en ligne
+# Lakika - site de streaming en ligne
 
 ## Scénario
 

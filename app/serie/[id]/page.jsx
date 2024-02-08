@@ -7,8 +7,10 @@ export default async function Home({ params }) {
   const response = await fetch(
     `${process.env.BACKEND_URL}/api/episode/${id}`,
     {
-      revalidate: 60,
-      tags: ["fetchEpisode"],
+      next: {
+        tags: ["fetchEpisodes"],
+        revalidate: 6,
+      },
     },
     {
       method: "GET",

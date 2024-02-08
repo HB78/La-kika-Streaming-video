@@ -30,7 +30,7 @@ const CreateSerieForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`${process.env.BACKEND_URL}/api/serie`, {
+    const res = await fetch(`http://localhost:3000/api/serie`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

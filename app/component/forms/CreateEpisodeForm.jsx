@@ -8,6 +8,7 @@ import UploadVideo from "../UploadVideo";
 
 const CreateEpisodeForm = () => {
   const [Video, setVideo] = useState("");
+  console.log("Video:", Video);
 
   //on créer le schéma de verification des input avec yup
   const schema = yup.object().shape({
@@ -39,20 +40,17 @@ const CreateEpisodeForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(
-      `${process.env.BACKEND_URL}/api/episode/${data.title}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: data.episode,
-          url: Video,
-        }),
-        // body: JSON.stringify({ ...data, photo: photoUrl }),
-      }
-    );
+    const res = await fetch(`http://localhost:3000/api/episode/${data.title}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: data.episode,
+        url: Video,
+      }),
+      // body: JSON.stringify({ ...data, photo: photoUrl }),
+    });
     if (res.ok) {
       alert("episode added successfully");
     } else {
@@ -86,7 +84,7 @@ const CreateEpisodeForm = () => {
         <small>{errors.episode?.message}</small>
         <input
           type="submit"
-          className="bg-red-600 py-3 my-6 rounded font-bold"
+          className="bg-red-600 py-3 my-6 rounded font-bold cursor-pointer hover:bg-red-700"
           name="Add an episode"
         />
         <div className="flex flex-col gap-3">
@@ -103,6 +101,12 @@ const CreateEpisodeForm = () => {
             create a movie
           </Link>
         </nav>
+        <Link
+          href={"/"}
+          className="bg-red-600 py-3 my-6 rounded-full text-md text-center"
+        >
+          Return to website
+        </Link>
       </form>
     </section>
   );

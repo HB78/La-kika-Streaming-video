@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as yup from "yup";
 
 const CreateFormSignup = () => {
@@ -33,6 +34,7 @@ const CreateFormSignup = () => {
         email: data.email,
         password: data.password,
       });
+      toast.success("connexion réussie, vous allez etre redirigé");
       router.push("/");
     } catch (error) {
       console.log("error:", error);

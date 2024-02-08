@@ -40,7 +40,7 @@ const CreateMovieForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`${process.env.BACKEND_URL}/api/video`, {
+    const res = await fetch(`http://localhost:3000/api/video`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,6 +55,7 @@ const CreateMovieForm = () => {
     if (res.ok) {
       alert("movie created");
     } else {
+      console.log("error:", res.json());
       alert("error");
     }
   };
