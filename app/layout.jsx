@@ -1,5 +1,5 @@
 import "@uploadthing/react/styles.css";
-import Provider from "./context/provider";
+import Provider from "./../context/Provider";
 import "./globals.css";
 
 // export const metadata = {
