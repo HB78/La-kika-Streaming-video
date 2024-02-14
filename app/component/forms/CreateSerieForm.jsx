@@ -74,13 +74,13 @@ const CreateSerieForm = () => {
       </form>
       <nav className="w-full text-md flex justify-between">
         <Link href={"/movie/newserie"} className="w-full">
-          create a serie
+          Create a serie
         </Link>
         <Link href={"/movie/newepisode"} className="w-full">
-          new episode
+          New episode
         </Link>
         <Link href={"/movie"} className="w-full">
-          create a movie
+          Create a movie
         </Link>
       </nav>
     </section>
