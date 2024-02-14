@@ -1,5 +1,6 @@
 import "@uploadthing/react/styles.css";
 import Provider from "./../context/Provider";
+import Favicon from "./../public/k.jpg";
 import "./globals.css";
 
 export const metadata = {
