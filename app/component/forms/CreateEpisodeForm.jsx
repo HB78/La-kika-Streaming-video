@@ -40,17 +40,20 @@ const CreateEpisodeForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`http://localhost:3000/api/episode/${data.title}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: data.episode,
-        url: Video,
-      }),
-      // body: JSON.stringify({ ...data, photo: photoUrl }),
-    });
+    const res = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/episode/${data.title}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: data.episode,
+          url: Video,
+        }),
+        // body: JSON.stringify({ ...data, photo: photoUrl }),
+      }
+    );
     if (res.ok) {
       alert("episode added successfully");
     } else {

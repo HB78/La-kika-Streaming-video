@@ -28,7 +28,7 @@ const CreateFormSignup = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await fetch(`http://localhost:3000/api/register`, {
+    const res = await fetch("http://localhost:3000/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const CreateFormSignup = () => {
         className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
         type="text"
         placeholder="name"
-        // autoComplete='email'
+        autoComplete="name"
       />
       <small className="text-red-500">{errors.name?.message}</small>
       <input
@@ -69,7 +69,7 @@ const CreateFormSignup = () => {
         type="email"
         id="email"
         placeholder="Email"
-        // autoComplete='email'
+        autoComplete="email"
       />
       <small className="text-red-500">{errors.email?.message}</small>
       <input

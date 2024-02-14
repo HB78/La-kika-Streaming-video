@@ -1,11 +1,10 @@
-import ListOfEpisode from "@/app/component/ListOfEpisode";
-import { Suspense } from "react";
 import Navbar from "../../component/Navbar";
+import ListOfEpisode from "./../../component/ListOfEpisode";
 
 export default async function Home({ params }) {
   const id = params.id;
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/episode/${id}`,
+    `${process.env.NEXTAUTH_URL}/api/episode/${id}`,
     {
       next: {
         tags: ["fetchEpisodes"],
@@ -27,12 +26,12 @@ export default async function Home({ params }) {
   const responseData = await response.json();
   return (
     <>
-      <Navbar position="relative" />
       <main
         role="main"
         aria-label={`Page d'accueil pour la série ${responseData?.title}`}
         className="w-full h-screen "
       >
+        <Navbar position="relative" />
         <h1
           role="heading"
           aria-level="1"
@@ -40,11 +39,8 @@ export default async function Home({ params }) {
         >
           {responseData.title}
         </h1>
-        <Suspense
-          fallback={<div className="text-xl text-red-700">Loading...</div>}
-        >
-          <ListOfEpisode data={responseData} />
-        </Suspense>
+
+        <ListOfEpisode data={responseData} />
       </main>
     </>
   );

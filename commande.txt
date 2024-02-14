@@ -1,3 +1,0 @@
-npx prisma migrate dev --name nom_de_la_add_password_in_schema
-npx prisma generate
-npx prisma migrate deploy 

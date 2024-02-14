@@ -40,23 +40,30 @@ export const POST = async (req) => {
       password.length > 80 ||
       email.length > 70
     ) {
-      new NextResponse("L'email ou le mot de passe n'est pas correct", {
-        status: 400,
-      });
-      return;
+      return new NextResponse(
+        JSON.stringify("L'email ou le mot de passe n'est pas correct"),
+        {
+          status: 400,
+        }
+      );
     }
     //si le user n'entre pas de nom valide
     if (!validateName(name)) {
-      new NextResponse("il n'y a pas de lettre dans votre nom", {
-        status: 400,
-      });
-      return;
+      return new NextResponse(
+        JSON.stringify("il n'y a pas de lettre dans votre nom"),
+        {
+          status: 400,
+        }
+      );
     }
 
     //si le user n'entre pas de nom validen (longueur du nom)
     if (name.length > 25 || name.length < 2) {
       return new NextResponse(
-        "La taille du nom doit etre comprise entre 2 et 25 caractères",
+        JSON.stringify(
+          "La taille du nom doit etre comprise entre 2 et 25 caractères"
+        ),
+
         {
           status: 400,
         }
@@ -76,7 +83,7 @@ export const POST = async (req) => {
 
     return new NextResponse(userRegistered, {
       status: 201,
-      message: "serie ajouté avec succes",
+      message: "utilisateur ajouté avec succes",
     });
   } catch (error) {
     console.log("error:", error);

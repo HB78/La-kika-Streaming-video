@@ -1,12 +1,15 @@
 import requests from "@/Request";
+import { fetchMovies, fetchSeries } from "./../fetches/fetches";
 import Main from "./component/Main";
 import Navbar from "./component/Navbar";
 import Row from "./component/Row";
-import { fetchMovies, fetchSeries } from "./fetches/fetches";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const responseDataMovies = await fetchMovies();
   const responseDataSeries = await fetchSeries();
+  console.log("responseDataSeries:", responseDataSeries);
   //on met toutes les requetes dans un tableau
   const urls = [
     requests.requestUpcoming,

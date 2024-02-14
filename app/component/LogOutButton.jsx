@@ -14,7 +14,10 @@ const LogOutButton = () => {
       <button
         aria-label="Déconnexion"
         onClick={() => {
-          signOut({ callbackUrl: "http://localhost:3000" });
+          signOut({
+            callbackUrl: `http://localhost:3000
+          `,
+          });
         }}
         className={active}
       >

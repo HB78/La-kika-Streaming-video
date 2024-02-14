@@ -4,7 +4,7 @@ import Navbar from "../../component/Navbar";
 export default async function Home({ params }) {
   const id = params.id;
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/video/${id}`,
+    `${process.env.NEXTAUTH_URL}/api/video/${id}`,
     {
       revalidate: 60,
       tags: ["fetchEOneFilm"],
@@ -25,8 +25,8 @@ export default async function Home({ params }) {
 
   return (
     <>
-      <Navbar position="relative" />
       <main className="w-full h-screen ">
+        <Navbar position="relative" />
         <h1 className="text-center text-2xl text-white font-bold pb-12 pt-12 lg:pb-12 lg:pt-0">
           {responseData.title}
         </h1>

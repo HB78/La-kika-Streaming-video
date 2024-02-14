@@ -29,11 +29,16 @@ const CreateFormSignup = () => {
   const onSubmit = async (data, e) => {
     try {
       e.preventDefault();
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         redirect: false,
         email: data.email,
         password: data.password,
       });
+      if (result?.error) {
+        // Gérez l'erreur, par exemple affichez un message d'erreur
+        toast.error("mauvais mot de passe ou email incorrecte");
+        return;
+      }
       toast.success("connexion réussie, vous allez etre redirigé");
       router.push("/");
     } catch (error) {

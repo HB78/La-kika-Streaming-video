@@ -4,7 +4,7 @@
 
 export const fetchMovies = async () => {
   const response = await fetch(
-    `http://localhost:3000/api/video`,
+    `${process.env.NEXTAUTH_URL}/api/video`,
     {
       next: {
         tags: ["fetchMovies"],
@@ -18,7 +18,6 @@ export const fetchMovies = async () => {
       },
     }
   );
-  console.log(process.env.BACKEND_URL);
 
   return response.json();
 };
@@ -26,7 +25,7 @@ export const fetchMovies = async () => {
 //fonction pour fetcher les serie de la bdd je l'utilise dans la page pricipale à la racine du site dans le page.jsx
 export const fetchSeries = async () => {
   const response = await fetch(
-    `http://localhost:3000/api/serie`,
+    `${process.env.NEXTAUTH_URL}/api/serie`,
     {
       next: {
         tags: ["fetchSeries"],
@@ -46,7 +45,7 @@ export const fetchSeries = async () => {
 //fetch que je fais dans la page serie/id de recherche pour récupérer une série en particulier et un episode en particulier, je l'utilise pour les metadata dynamiques mais aussi dans le component en dessous mais la fonction est la même sauf que je ne l'ai pas refactorisé
 export const fetchOneSerie = async (id) => {
   const response = await fetch(
-    `${process.env.BACKEND_URL}/api/episode/${id}`,
+    `${process.env.NEXTAUTH_URL}/api/episode/${id}`,
     {
       revalidate: 0,
     },
@@ -68,7 +67,7 @@ export const fetchOneSerie = async (id) => {
 //fetch que je fais dans le page film/id pour recuperer un film en particulier, je l'utilise pour les metadata dynamiques mais aussi dans le component en dessous mais la fonction est la même sauf que je ne l'ai pas refactorisé
 
 export const fetchOneFilm = async (id) => {
-  const response = await fetch(`${process.env.BACKEND_URL}/api/video/${id}`, {
+  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/video/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
