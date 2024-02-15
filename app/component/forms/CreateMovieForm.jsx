@@ -40,7 +40,7 @@ const CreateMovieForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`https://lakika.vercel.app/api/video`, {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/video`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
