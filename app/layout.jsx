@@ -10,16 +10,16 @@ export const metadata = {
   description:
     "Regardez vos films et séries préférés en ligne sans pub et sans inscription, le site est totalement gratuit et sans pub. Ne payez plus pour regarder vos films et séries, profitez sans limite de notre catalogue de films et séries en streaming.",
   icons: [{ rel: "icon", url: Favicon.src }],
-  // openGraph: {
-  //   title:
-  //     "la kika - Le premier site de streaming sans pub et sans inscription",
-  //   description:
-  //     "Regardez vos films et séries préférés en ligne sans pub et sans inscription, le site est totalement gratuit et sans pub. Ne payez plus pour regarder vos films et séries, profitez sans limite de notre catalogue de films et séries en streaming.",
-  //   // url: 'https://nextjs.org',
-  //   // siteName: 'Next.js',
-  //   locale: "en_FR",
-  //   type: "website",
-  // },
+  openGraph: {
+    title:
+      "la kika - Le premier site de streaming sans pub et sans inscription",
+    description:
+      "Regardez vos films et séries préférés en ligne sans pub et sans inscription, le site est totalement gratuit et sans pub. Ne payez plus pour regarder vos films et séries, profitez sans limite de notre catalogue de films et séries en streaming.",
+    url: "https://lakika.vercel.app",
+    // siteName: 'Next.js',
+    locale: "en_FR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
