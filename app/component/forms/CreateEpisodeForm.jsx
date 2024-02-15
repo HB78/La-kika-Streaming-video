@@ -41,7 +41,7 @@ const CreateEpisodeForm = () => {
 
   const onSubmit = async (data) => {
     const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/episode/${data.title}`,
+      `https://lakika.vercel.app/api/episode/${data.title}`,
       {
         method: "POST",
         headers: {
