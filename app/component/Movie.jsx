@@ -19,7 +19,7 @@ const Movie = ({ item }) => {
       >
         <Image
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1424px) 100%"
+          sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           priority
           quality={70}
           className="w-full h-full block object-contain"

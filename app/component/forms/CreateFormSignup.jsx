@@ -28,7 +28,7 @@ const CreateFormSignup = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await fetch("http://localhost:3000/api/register", {
+    const res = await fetch(`https://lakika.vercel.app/api/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,9 +89,9 @@ const CreateFormSignup = () => {
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
       <p className="py-8">
-        <Link href={"/login"}>
+        <Link href={"/"}>
           <span className="text-gray-600 hover:text-red-500 cursor-pointer">
-            Already Subscribed ?
+            page d'accueil
           </span>{" "}
         </Link>
         <Link href="/login" className="hover:text-red-500 ml-1">

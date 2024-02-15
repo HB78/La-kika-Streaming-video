@@ -15,7 +15,7 @@ const LogOutButton = () => {
         aria-label="Déconnexion"
         onClick={() => {
           signOut({
-            callbackUrl: `http://localhost:3000
+            callbackUrl: `${process.env.NEXTAUTH_URL}
           `,
           });
         }}

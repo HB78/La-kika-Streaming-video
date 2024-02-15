@@ -21,7 +21,7 @@ const Main = ({ movies }) => {
           alt="affiche de film parmis les plus populaires"
           priority={true}
           quality={100}
-          sizes="(max-width: 768px) 100vw, (max-width: 1424px) 100%"
+          sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           fill={true}
           src={`https://image.tmdb.org/t/p/original/${randomMovie?.backdrop_path}`}
           className="w-full h-full object-cover lg:object-contain"
