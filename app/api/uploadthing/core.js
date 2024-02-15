@@ -28,7 +28,7 @@ exports.ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
     }),
-  videoUploader: f({ video: { maxFileSize: "700MB" } })
+  videoUploader: f({ video: { maxFileSize: "2000MB" } })
     .middleware(async ({ req }) => {
       const user = await auth(req);
 
