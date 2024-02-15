@@ -4,7 +4,7 @@
 
 export const fetchMovies = async () => {
   const response = await fetch(
-    `https://lakika.vercel.app/api/video`,
+    `${process.env.NEXTAUTH_URL}/api/video`,
     {
       next: {
         tags: ["fetchMovies"],
@@ -25,7 +25,7 @@ export const fetchMovies = async () => {
 //fonction pour fetcher les serie de la bdd je l'utilise dans la page pricipale à la racine du site dans le page.jsx
 export const fetchSeries = async () => {
   const response = await fetch(
-    `https://lakika.vercel.app/api/serie`,
+    `${process.env.NEXTAUTH_URL}/api/serie`,
     {
       next: {
         tags: ["fetchSeries"],
