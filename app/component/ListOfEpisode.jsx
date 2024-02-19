@@ -19,7 +19,7 @@ const ListOfEpisode = ({ data }) => {
                   },
                 }}
               >
-                {item.title} &nbsp;
+                <span className="hover:text-red-600">{item.title}&nbsp;</span>
               </Link>
             </aside>
           );
