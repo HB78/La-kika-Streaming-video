@@ -6,7 +6,7 @@ export default async function Home({ params }) {
   const response = await fetch(
     `${process.env.NEXTAUTH_URL}/api/video/${id}`,
     {
-      revalidate: 60,
+      revalidate: 180,
       tags: ["fetchEOneFilm"],
     },
     {
@@ -31,7 +31,11 @@ export default async function Home({ params }) {
           {responseData.title}
         </h1>
         <article className="flex justify-center items-center">
-          <VideoPlayer url={responseData?.url} />
+          {!responseData?.url ? (
+            <p className="text-3xl text-red-800 font-bolder">Chargement...</p>
+          ) : (
+            <VideoPlayer url={responseData?.url} />
+          )}
         </article>
       </main>
     </>

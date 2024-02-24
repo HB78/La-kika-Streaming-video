@@ -1,0 +1,5 @@
+les commandes a realiser si mon github bug a cause du template now.ts
+git config --global credential.useHttpPath true
+
+le code du haut devrais sufire normalement
+git config --global -e
