@@ -23,15 +23,6 @@ export default async function Home({ params }) {
 
   const responseData = await response.json();
 
-  if (
-    !responseData?.url ||
-    !responseData ||
-    responseData?.url === "" ||
-    responseData?.url === null
-  ) {
-    return <h1 className="text-3xl text-red-800 font-bolder">chargement..</h1>;
-  }
-
   return (
     <>
       <main className="w-full h-screen ">

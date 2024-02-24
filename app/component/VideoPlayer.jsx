@@ -10,6 +10,9 @@ const VideoPlayer = ({ url }) => {
     setClient(true);
   }, []);
 
+  if (!client || !url)
+    return <h1 className="text-2xl text-red-600">Chargement</h1>;
+
   return (
     <>
       {client ? (
