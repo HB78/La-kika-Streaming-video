@@ -3,16 +3,12 @@ import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 const VideoPlayer = ({ url }) => {
-  console.log("url:putain", url);
   //j'ai utilisé le useEffect pour obligé le player a se lancer coté client a chaque fois que la page est chargé car dans le cas contraire cela crée des problèmes liés à l'hydratation.
   const [client, setClient] = useState(false);
 
   useEffect(() => {
     setClient(true);
-  }, [url]);
-
-  if (!url || url === "" || url === null || url === undefined)
-    return <h1 className="text-2xl text-red-600">Chargement</h1>;
+  }, []);
 
   return (
     <>
