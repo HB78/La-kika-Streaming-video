@@ -24,7 +24,7 @@ const Main = ({ movies }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           fill={true}
           src={`https://image.tmdb.org/t/p/original/${randomMovie?.backdrop_path}`}
-          className="w-full h-full object-cover lg:object-contain"
+          className="w-full h-full object-contain lg:object-contain"
         />
       </div>
 
