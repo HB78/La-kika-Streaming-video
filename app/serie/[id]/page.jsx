@@ -25,23 +25,21 @@ export default async function Home({ params }) {
 
   const responseData = await response.json();
   return (
-    <>
-      <main
-        role="main"
-        aria-label={`Page d'accueil pour la série ${responseData?.title}`}
-        className="w-full h-screen "
+    <main
+      role="main"
+      aria-label={`Page d'accueil pour la série ${responseData?.title}`}
+      className="w-full h-screen "
+    >
+      <Navbar position="relative" />
+      <h1
+        role="heading"
+        aria-level="1"
+        className="text-center text-2xl text-white font-bold pb-12 pt-12 lg:pb-12 lg:pt-0"
       >
-        <Navbar position="relative" />
-        <h1
-          role="heading"
-          aria-level="1"
-          className="text-center text-2xl text-white font-bold pb-12 pt-12 lg:pb-12 lg:pt-0"
-        >
-          {responseData.title}
-        </h1>
+        {responseData.title}
+      </h1>
 
-        <ListOfEpisode data={responseData} />
-      </main>
-    </>
+      <ListOfEpisode data={responseData} />
+    </main>
   );
 }
