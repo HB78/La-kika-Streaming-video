@@ -29,7 +29,7 @@ const VideoPlayerForSerie = ({ episodeOne }) => {
     <>
       {client ? (
         <ReactPlayer
-          width={"90%"}
+          className="w-full h-full"
           url={url}
           controls={true}
           // light is useful in case of dark mode
