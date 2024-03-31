@@ -35,7 +35,7 @@ const ListOfEpisode = ({ data }) => {
       <article
         role="region"
         aria-label={`Lecture de l'épisode 1`}
-        className="flex items-center justify-center w-[95%] h-[60%] lg:w-[50%] lg:h-[50%]"
+        className="flex items-center justify-center"
       >
         <VideoPlayerForSerie episodeOne={data.episodeOwned[0].url} />
       </article>
