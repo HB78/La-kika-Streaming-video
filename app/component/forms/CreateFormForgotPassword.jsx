@@ -23,18 +23,15 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmitForm = async (data) => {
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/users/forgotPassword`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-        }),
-      }
-    );
+    const res = await fetch(`https://lakika.vercel.app/api/forgotPassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: data.email,
+      }),
+    });
     if (res.ok) {
       toast.success(
         "Un email vous été envoyé pour réinitialiser votre mot de passe"
