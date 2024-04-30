@@ -23,19 +23,18 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmitForm = async (data, e) => {
+    console.log("data:", data);
     e.preventDefault();
-    const res = await fetch(
-      `https://lakika.vercel.app/api/users/forgotPassword`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-        }),
-      }
-    );
+    const res = await fetch(`http://localhost:3000/api/users/forgotPassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: data.email,
+      }),
+    });
+    console.log("res:", res);
     if (res.ok) {
       toast.success(
         "Un email vous été envoyé pour réinitialiser votre mot de passe"
