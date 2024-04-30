@@ -66,7 +66,7 @@ const CreateFormForgotPassword = () => {
         disabled={isSubmitting}
         className="bg-red-600 py-3 my-6 rounded font-bold hover:bg-red-700 cursor-pointer transition duration-300 ease-in-out"
       >
-        {isSubmitting ? "Sendind..." : "Sign In"}
+        {isSubmitting ? "Sending..." : "Sign In"}
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
       <p className="py-8">
