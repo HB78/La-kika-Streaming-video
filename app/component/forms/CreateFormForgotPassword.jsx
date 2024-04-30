@@ -22,11 +22,9 @@ const CreateFormForgotPassword = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmitForm = async (data, e) => {
-    console.log("data:", data);
-    e.preventDefault();
+  const onSubmitForm = async (data) => {
     const res = await fetch(
-      `http://localhost:3000/api/users/forgotPassword`,
+      `https://lakika.vercel.app/api/users/forgotPassword`,
       {
         method: "POST",
         headers: {
@@ -43,8 +41,9 @@ const CreateFormForgotPassword = () => {
         "Un email vous été envoyé pour réinitialiser votre mot de passe"
       );
     } else {
-      console.log("error:", res.json());
-      return toast.error("mauvaise adresse email");
+      const errorResponse = await res.json();
+      console.log("error:", errorResponse);
+      toast.error("Mauvaise adresse email");
     }
   };
 
@@ -53,6 +52,9 @@ const CreateFormForgotPassword = () => {
       onSubmit={handleSubmit(onSubmitForm)}
       className="w-full flex flex-col py-4"
     >
+      <label htmlFor="email" className="hidden">
+        Email
+      </label>
       <input
         {...register("email")}
         className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
