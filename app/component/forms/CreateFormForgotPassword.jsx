@@ -26,7 +26,7 @@ const CreateFormForgotPassword = () => {
     console.log("data:", data);
     e.preventDefault();
     const res = await fetch(
-      `https://lakika.vercel.app/api/users/forgotPassword`,
+      `http://localhost:3000/api/users/forgotPassword`,
       {
         method: "POST",
         headers: {
