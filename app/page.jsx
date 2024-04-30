@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const responseDataMovies = await fetchMovies();
   const responseDataSeries = await fetchSeries();
-  console.log("responseDataSeries:", responseDataSeries);
   //on met toutes les requetes dans un tableau
   const urls = [
     requests.requestUpcoming,
