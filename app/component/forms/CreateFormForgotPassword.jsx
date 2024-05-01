@@ -22,18 +22,15 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await fetch(
-      `https://lakika.vercel.app/api/forgotpassword/${data.email}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // body: JSON.stringify({
-        //   email: data.email,
-        // }),
-      }
-    );
+    const res = await fetch(`https://lakika.vercel.app/api/forgotpassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: data.email,
+      }),
+    });
     if (res.ok) {
       toast.success("utilisateur crée avec succès");
     } else {
