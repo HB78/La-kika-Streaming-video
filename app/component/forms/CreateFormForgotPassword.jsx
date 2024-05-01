@@ -1,8 +1,8 @@
 "use client";
+import { forgotPassworddAction } from "@/actions/formActionForgotPassword";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import * as yup from "yup";
 
 const CreateFormForgotPassword = () => {
@@ -22,31 +22,11 @@ const CreateFormForgotPassword = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmitForm = async (data) => {
-    const res = await fetch("http://localhost:3000/api/forgotpassword", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: data.email,
-      }),
-    });
-    if (res.ok) {
-      console.log("res:test mode dev", res);
-
-      toast.success(
-        "Un email vous été envoyé pour réinitialiser votre mot de passe"
-      );
-    } else {
-      console.log("error:", res);
-      toast.error("Mauvaise adresse email");
-    }
-  };
-
   return (
     <form
-      onSubmit={handleSubmit(onSubmitForm)}
+      action={async (formData) => {
+        await forgotPassworddAction(formData);
+      }}
       className="w-full flex flex-col py-4"
     >
       <label htmlFor="email" className="hidden">
