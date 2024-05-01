@@ -1,27 +1,8 @@
 "use client";
 import { forgotPassworddAction } from "@/actions/formActionForgotPassword";
-import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
 
 const CreateFormForgotPassword = () => {
-  //on créer le schéma de verification des input avec yup
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .email("Entrez une adresse email valide")
-      .required("Remplissez le champ 'Email'"),
-  });
-  //on créer les constante de validation des input avec react-hook-form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
   return (
     <form
       action={async (formData) => {
@@ -33,19 +14,20 @@ const CreateFormForgotPassword = () => {
         Email
       </label>
       <input
-        {...register("email")}
+        name="email"
         className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
         type="email"
         id="email"
         placeholder="Email"
         autoComplete="email"
+        required
       />
-      <small className="text-red-500">{errors.email?.message}</small>
+      <small className="text-red-500">{null}</small>
       <button
-        disabled={isSubmitting}
+        // disabled={isSubmitting}
         className="bg-red-600 py-3 my-6 rounded font-bold hover:bg-red-700 cursor-pointer transition duration-300 ease-in-out"
       >
-        {isSubmitting ? "Sending..." : "Sign In"}
+        {"send"}
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
       <p className="py-8">
