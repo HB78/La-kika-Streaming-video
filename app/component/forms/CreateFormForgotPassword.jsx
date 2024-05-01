@@ -22,7 +22,7 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await fetch(`https://lakika.vercel.app/api/forgotpassword`, {
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/forgotpassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
