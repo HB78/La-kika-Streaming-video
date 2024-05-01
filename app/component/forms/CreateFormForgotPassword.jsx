@@ -23,7 +23,7 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmitForm = async (data) => {
-    const res = await fetch("https://lakika.vercel.app/api/forgotpassword", {
+    const res = await fetch("http://localhost:3000/api/forgotpassword", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,12 +33,13 @@ const CreateFormForgotPassword = () => {
       }),
     });
     if (res.ok) {
+      console.log("res:test mode dev", res);
+
       toast.success(
         "Un email vous été envoyé pour réinitialiser votre mot de passe"
       );
     } else {
-      const errorResponse = await res.json();
-      console.log("error:", errorResponse);
+      console.log("error:", res);
       toast.error("Mauvaise adresse email");
     }
   };

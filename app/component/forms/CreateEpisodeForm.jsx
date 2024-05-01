@@ -23,14 +23,6 @@ const CreateEpisodeForm = () => {
     resolver: yupResolver(schema),
   });
 
-  function getInfo(info) {
-    let data = info;
-    setPhotoUrl((prevPhotoUrl) => {
-      console.log("--> LA photoUrl", prevPhotoUrl);
-      return data.url;
-    });
-  }
-
   function getVideoUrl(infoData) {
     let data = infoData;
     setVideo((prevPhotoUrl) => {
