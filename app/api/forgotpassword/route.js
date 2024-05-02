@@ -116,7 +116,7 @@ export const POST = async (req) => {
   try {
     const data = await resend.emails.send({
       from: "hiko@lakka.blue",
-      to: [email],
+      to: email,
       subject: "Forgot Password Lakika website",
       html: htmlContent,
     });
