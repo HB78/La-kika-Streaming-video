@@ -113,16 +113,15 @@ export const POST = async (req) => {
 </html>
 `;
 
+  const data = await resend.emails.send({
+    from: "hiko@lakka.blue",
+    to: email,
+    subject: "Forgot Password Lakika website",
+    html: htmlContent,
+  });
+
   try {
-    const data = await resend.emails.send({
-      from: "hiko@lakka.blue",
-      to: email,
-      subject: "Forgot Password Lakika website",
-      html: htmlContent,
-    });
-
     const emailSendedStringified = JSON.stringify("data");
-
     return new NextResponse(emailSendedStringified, {
       status: 200,
       message: "Message envoyé",
