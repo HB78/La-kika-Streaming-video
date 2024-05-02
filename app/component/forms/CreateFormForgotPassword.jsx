@@ -31,7 +31,6 @@ const CreateFormForgotPassword = () => {
         email: data.email,
       }),
     });
-    console.log(res, data.email);
     if (res.ok) {
       toast.success(
         "Un email de réinitialisation de mot de passe a été envoyé à votre adresse email. Veuillez vérifier votre boîte de réception."
