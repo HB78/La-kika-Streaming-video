@@ -46,7 +46,6 @@ export const POST = async (req) => {
     process.env.JWT_SECRET_LOST_PASSWORD,
     { expiresIn: "10m" }
   );
-  console.log("token:", token);
 
   const link = `https://lakika.vercel.app/reset-password/${findUserIfExist.id}/${token}`;
 
@@ -115,14 +114,14 @@ export const POST = async (req) => {
 `;
 
   try {
-    // const data = await resend.emails.send({
-    //   from: "hiko@lakka.blue",
-    //   to: email,
-    //   subject: "Forgot Password Lakika website",
-    //   html: htmlContent,
-    // });
+    const data = await resend.emails.send({
+      from: "hiko@lakka.blue",
+      to: email,
+      subject: "Forgot Password Lakika website",
+      html: htmlContent,
+    });
 
-    const emailSendedStringified = JSON.stringify("data");
+    const emailSendedStringified = JSON.stringify(data);
 
     return new NextResponse(emailSendedStringified, {
       status: 200,
