@@ -3,3 +3,5 @@ git config --global credential.useHttpPath true
 
 le code du haut devrais sufire normalement
 git config --global -e
+
+https://blog.logrocket.com/using-cors-next-js-handle-cross-origin-requests/

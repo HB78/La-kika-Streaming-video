@@ -32,7 +32,9 @@ const CreateFormForgotPassword = () => {
       }),
     });
     if (res.ok) {
-      toast.success("utilisateur crée avec succès");
+      toast.success(
+        "Un email de réinitialisation de mot de passe a été envoyé à votre adresse email. Veuillez vérifier votre boîte de réception."
+      );
     } else {
       const errorResponse = await res.json();
       console.log(errorResponse, errors);

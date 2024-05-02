@@ -2,12 +2,17 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa6";
 import { toast } from "sonner";
 import * as yup from "yup";
 
 const CreateFormSignup = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePassword = () => setShowPassword(!showPassword);
 
   //on créer le schéma de verification des input avec yup
   const schema = yup.object().shape({
@@ -72,14 +77,23 @@ const CreateFormSignup = () => {
         autoComplete="email"
       />
       <small className="text-red-500">{errors.email?.message}</small>
-      <input
-        id="password"
-        {...register("password")}
-        className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
-        type="password"
-        placeholder="Password"
-        autoComplete="current-password"
-      />
+      <div className="relative w-full">
+        <input
+          id="password"
+          {...register("password")}
+          className="w-full p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          autoComplete="current-password"
+        />
+        <button
+          type="button"
+          onClick={togglePassword}
+          className="absolute inset-y-0 right-0 mr-3"
+        >
+          {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+        </button>
+      </div>
       <small className="text-red-500">{errors.password?.message}</small>
       <button
         disabled={isSubmitting}

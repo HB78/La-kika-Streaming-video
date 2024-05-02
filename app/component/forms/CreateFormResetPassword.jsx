@@ -1,8 +1,6 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -10,19 +8,18 @@ import { FaRegEye } from "react-icons/fa6";
 import { toast } from "sonner";
 import * as yup from "yup";
 
-const CreateFormSignup = () => {
+const CreateFormForgotPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
-  const router = useRouter();
-  //on créer le schéma de verification des input avec yup
+
   const schema = yup.object().shape({
-    email: yup
+    password: yup
       .string()
-      .email("Entrez une adresse email valide")
-      .required("Remplissez le champ 'Email'"),
-    password: yup.string().required("Remplissez le champ 'Mot de passe'"),
+      .required("Remplissez le champ 'new password'")
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
+      .max(50, "Le mot de passe doit contenir au maximum 50 caractères"),
   });
-  //on créer les constante de validation des input avec react-hook-form
+
   const {
     register,
     handleSubmit,
@@ -31,48 +28,43 @@ const CreateFormSignup = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data, e) => {
-    try {
-      e.preventDefault();
-      const result = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      });
-      if (result?.error) {
-        // Gérez l'erreur, par exemple affichez un message d'erreur
-        toast.error("mauvais mot de passe ou email incorrecte");
-        return;
-      }
-      toast.success("connexion réussie, vous allez etre redirigé");
-      router.push("/");
-    } catch (error) {
-      console.log("error:", error);
+  const onSubmit = async (data) => {
+    const res = await fetch(`https://lakika.vercel.app/api/resetpassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newPassword: data.password,
+      }),
+    });
+    if (res.ok) {
+      toast.success(
+        "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter."
+      );
+    } else {
+      const errorResponse = await res.json();
+      console.log(errorResponse, errors);
+      toast.error(errorResponse);
     }
   };
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="w-full flex flex-col py-4"
     >
-      <input
-        {...register("email")}
-        className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
-        type="email"
-        id="email"
-        placeholder="Email"
-        autoComplete="email"
-      />
-      <small className="text-red-500">{errors.email?.message}</small>
+      <label htmlFor="email" className="hidden">
+        Email
+      </label>
       <div className="relative w-full">
         <input
-          id="password"
+          name="password"
           {...register("password")}
           className="w-full p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
           type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          autoComplete="current-password"
+          id="password"
+          placeholder="new password"
+          required
         />
         <button
           type="button"
@@ -85,23 +77,23 @@ const CreateFormSignup = () => {
       <small className="text-red-500">{errors.password?.message}</small>
       <button
         disabled={isSubmitting}
-        className="bg-red-600 py-3 my-6 rounded font-bold"
+        className="bg-red-600 py-3 my-6 rounded font-bold hover:bg-red-700 cursor-pointer transition duration-300 ease-in-out"
       >
-        {isSubmitting ? "Signing In..." : "Sign In"}
+        {"send"}
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
       <p className="py-8">
         <Link href={"/"}>
           <span className="text-gray-600 hover:text-red-500 cursor-pointer">
-            page d'accueil
+            Page d'accueil
           </span>{" "}
         </Link>
-        <Link href="/register" className="hover:text-red-500 ml-1">
-          Sign Up
+        <Link href="/login" className="hover:text-red-500 ml-1">
+          Login
         </Link>
       </p>
     </form>
   );
 };
 
-export default CreateFormSignup;
+export default CreateFormForgotPassword;

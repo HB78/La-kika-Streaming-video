@@ -16,6 +16,7 @@
     "@uploadthing/react": "^6.2.0",
     "bcrypt": "^5.1.1",
     "eslint": "^8.56.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "prettier": "^3.2.5",
