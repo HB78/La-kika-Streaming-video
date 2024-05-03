@@ -1,6 +1,7 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -9,6 +10,10 @@ import { toast } from "sonner";
 import * as yup from "yup";
 
 const CreateFormForgotPassword = () => {
+  const params = useParams();
+  console.log("params:", params);
+  console.log("params.token:", params.token);
+
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -29,15 +34,18 @@ const CreateFormForgotPassword = () => {
   });
 
   const onSubmit = async (data) => {
-    const res = await fetch(`https://lakika.vercel.app/api/resetpassword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        newPassword: data.password,
-      }),
-    });
+    const res = await fetch(
+      `https://lakika.vercel.app/api/resetpassword/${params.id}/${params.token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newPassword: data.password,
+        }),
+      }
+    );
     if (res.ok) {
       toast.success(
         "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter."
@@ -79,7 +87,7 @@ const CreateFormForgotPassword = () => {
         disabled={isSubmitting}
         className="bg-red-600 py-3 my-6 rounded font-bold hover:bg-red-700 cursor-pointer transition duration-300 ease-in-out"
       >
-        {"send"}
+        {isSubmitting ? "Updating" : "Update password"}
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
       <p className="py-8">
