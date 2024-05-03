@@ -90,16 +90,22 @@ const CreateFormSignup = () => {
         {isSubmitting ? "Signing In..." : "Sign In"}
       </button>
       <div className="flex justify-between items-center text-sm text-gray-600"></div>
-      <p className="py-8">
+      <nav className="flex justify-between py-6">
         <Link href={"/"}>
           <span className="text-gray-600 hover:text-red-500 cursor-pointer">
-            page d'accueil
+            Page d'accueil
           </span>{" "}
         </Link>
         <Link href="/register" className="hover:text-red-500 ml-1">
           Sign Up
         </Link>
-      </p>
+      </nav>
+      <Link
+        href="/forgot-password"
+        className="hover:text-red-500 ml-1 float-right"
+      >
+        Forgot password ?
+      </Link>
     </form>
   );
 };

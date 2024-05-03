@@ -83,8 +83,8 @@ export const POST = async (req) => {
         .button {
             display: block;
             width: max-content;
-            background-color: #0056b3;
-            color: #ffffff;
+            background-color: #874CCC;
+            color: #10439F;
             padding: 10px 20px;
             margin-top: 20px;
             text-decoration: none;
