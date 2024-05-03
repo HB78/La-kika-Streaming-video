@@ -6,11 +6,11 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export const PUT = async (req, { params }) => {
-  const { id, token } = params;
+  const { token } = params;
 
   let body = await req.json();
 
-  const { newPassword } = body;
+  const { newPassword, id } = body;
 
   if (!newPassword) {
     return new NextResponse(

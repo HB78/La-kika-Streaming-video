@@ -35,7 +35,7 @@ const CreateFormForgotPassword = () => {
 
   const onSubmit = async (data) => {
     const res = await fetch(
-      `https://lakika.vercel.app/api/resetpassword/${params.id}/${params.token}`,
+      `https://lakika.vercel.app/api/resetpassword/${params.token}`,
       {
         method: "POST",
         headers: {
@@ -43,6 +43,7 @@ const CreateFormForgotPassword = () => {
         },
         body: JSON.stringify({
           newPassword: data.password,
+          id: params.id,
         }),
       }
     );
