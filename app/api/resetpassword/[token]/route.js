@@ -11,6 +11,7 @@ export const PUT = async (req, { params }) => {
   let body = await req.json();
 
   const { newPassword, id } = body;
+  console.log("id: from server", id);
 
   if (!newPassword) {
     return new NextResponse(
@@ -34,6 +35,7 @@ export const PUT = async (req, { params }) => {
       id: id,
     },
   });
+  console.log("findUserIfExist:from server", findUserIfExist);
 
   if (!findUserIfExist) {
     return new NextResponse(JSON.stringify("Cet utilisateur est inexistant"), {

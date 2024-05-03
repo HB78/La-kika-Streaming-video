@@ -90,7 +90,6 @@ export const POST = async (req) => {
             text-decoration: none;
             border-radius: 5px;
             text-align: center;
-            font-size: 20px;
         }
         .footer {
             margin-top: 20px;
