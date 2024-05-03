@@ -11,8 +11,6 @@ import * as yup from "yup";
 
 const CreateFormForgotPassword = () => {
   const params = useParams();
-  console.log("params:", params);
-  console.log("params.token:", params.token);
 
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword(!showPassword);
@@ -21,7 +19,7 @@ const CreateFormForgotPassword = () => {
     password: yup
       .string()
       .required("Remplissez le champ 'new password'")
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
+      .min(4, "Le mot de passe doit contenir au moins 8 caractères")
       .max(50, "Le mot de passe doit contenir au maximum 50 caractères"),
   });
 
@@ -37,7 +35,7 @@ const CreateFormForgotPassword = () => {
     const res = await fetch(
       `https://lakika.vercel.app/api/resetpassword/${params.token}`,
       {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
