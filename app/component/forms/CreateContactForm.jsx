@@ -1,7 +1,9 @@
 "use client";
+import emailjs from "@emailjs/browser";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as yup from "yup";
 
 const CreateFormSignup = () => {
@@ -12,7 +14,8 @@ const CreateFormSignup = () => {
       .string()
       .email("Entrez une adresse email valide")
       .required("Remplissez le champ 'Email'"),
-    password: yup.string().required("Remplissez le champ 'Mot de passe'"),
+    name: yup.string().required("Remplissez le champ 'Name'"),
+    message: yup.string().required("Remplissez le champ 'Name'"),
   });
   //on créer les constante de validation des input avec react-hook-form
   const {
@@ -23,8 +26,53 @@ const CreateFormSignup = () => {
     resolver: yupResolver(schema),
   });
 
+  const sendEmail = async (data) => {
+    console.log("data:putain", data);
+    let emailTemplate = {
+      to_name: "Hicham",
+      from_name: data.name,
+      message: data.message,
+      from_email: data.email,
+    };
+    try {
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        emailTemplate,
+        {
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_ID,
+        }
+      );
+      console.log("SUCCESS!");
+    } catch (err) {
+      if (err) {
+        console.log("EMAILJS FAILED...", err);
+        return;
+      }
+
+      console.log("ERROR", err);
+    }
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      const result = await sendEmail(data);
+      if (result?.error) {
+        // Gérez l'erreur, par exemple affichez un message d'erreur
+        toast.error("mauvais mot de passe ou email incorrecte");
+        return;
+      }
+      toast.success("connexion réussie, vous allez etre redirigé");
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+
   return (
-    <form className="w-[70%] flex flex-col py-4 text-white text-xl">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-[100%] flex flex-col py-4 text-white xl:w-[60%] sm:text-sm md:text-md xl:text-xl"
+    >
       <div className="w-full">
         <input
           id="text"
@@ -55,7 +103,7 @@ const CreateFormSignup = () => {
       </small>
       <button
         disabled={isSubmitting}
-        className="bg-red-600 py-3 my-6 rounded font-bold"
+        className="w-1/2 mx-auto bg-red-600 py-3 my-6 rounded font-bold hover:bg-red-700"
       >
         {isSubmitting ? "Envoi en cours" : "Envoyer"}
       </button>

@@ -1,4 +1,5 @@
 import requests from "@/Request";
+import Link from "next/link";
 import { fetchMovies, fetchSeries } from "./../fetches/fetches";
 import Main from "./component/Main";
 import Navbar from "./component/Navbar";
@@ -50,6 +51,11 @@ export default async function Home() {
       <Row rowID="4" title="Top Rated" moviesFetched={topRated} />
       <Row rowID="6" title="Films" moviesFetched={responseDataMovies} />
       <Row rowID="7" title="Series" moviesFetched={responseDataSeries} />
+      <footer className="w-full text-slate-200 py-2 text-center border-t-2 mt-3 border-red-900">
+        <Link className="hover:text-red-600" href="/contact">
+          Contact
+        </Link>
+      </footer>
     </main>
   );
 }
