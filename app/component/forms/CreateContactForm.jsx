@@ -15,7 +15,7 @@ const CreateFormSignup = () => {
       .email("Entrez une adresse email valide")
       .required("Remplissez le champ 'Email'"),
     name: yup.string().required("Remplissez le champ 'Name'"),
-    message: yup.string().required("Remplissez le champ 'Name'"),
+    message: yup.string().required("Remplissez le champ 'Message'"),
   });
   //on créer les constante de validation des input avec react-hook-form
   const {
@@ -62,7 +62,7 @@ const CreateFormSignup = () => {
         toast.error("mauvais mot de passe ou email incorrecte");
         return;
       }
-      toast.success("connexion réussie, vous allez etre redirigé");
+      toast.success("Votre message a été envoyé avec succès");
     } catch (error) {
       console.log("error:", error);
     }

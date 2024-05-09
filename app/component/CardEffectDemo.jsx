@@ -21,7 +21,7 @@ export const projects = [
   {
     title: "Zero pubs publicité et contenu exclusif",
     description:
-      "Pas de publicité sur Lakika, nous ne vous embêterons pas avec des pubs. Il y aura sur ke site du contenu exclusif autrement dit du contenu introuvable sur Netflix, mon but est de postuler chez netflix, vous comprendrez que...",
+      "Pas de publicité sur Lakika, nous ne vous embêterons pas avec des pubs. Il y n'aura sur le site du que contenu exclusif autrement dit du contenu introuvable sur Netflix, mon but est de postuler chez netflix, vous comprendrez que...",
   },
   {
     title: "Aucun tracking",
