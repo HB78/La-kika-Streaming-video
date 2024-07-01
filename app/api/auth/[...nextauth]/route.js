@@ -70,7 +70,7 @@ export const authOptions = {
     async jwt({ token, user, session, trigger }) {
       // console.log("jwt", user, session, token);
 
-      if (trigger === "upddate" && session?.name) {
+      if (trigger === "update" && session?.name) {
         token.name = session.name;
       }
 

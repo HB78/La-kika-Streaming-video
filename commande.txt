@@ -5,3 +5,5 @@ le code du haut devrais sufire normalement
 git config --global -e
 
 https://blog.logrocket.com/using-cors-next-js-handle-cross-origin-requests/
+
+      <Row rowID="1" title="UpComing" moviesFetched={upcoming} />

@@ -53,7 +53,7 @@ model Episode {
   title       String
   photo       String?
   url         String
-  serieOwner  Serie   @relation("episodeofserie", fields: [serieOwnerId], references: [id])
+  serieOwner  Serie   @relation("episodeofserie", fields: [serieOwnerId], references: [id], onDelete: Cascade)
   serieOwnerId String
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
