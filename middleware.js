@@ -10,6 +10,7 @@ export function middleware(request) {
     font-src 'self' https://lakika.vercel.app;
     object-src 'none';
     base-uri 'self';
+    media-src 'self' 'nonce-${nonce}' https://lakika.vercel.app;
     form-action 'self';
     frame-ancestors 'none';
     upgrade-insecure-requests;
