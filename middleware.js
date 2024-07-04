@@ -4,7 +4,7 @@ export function middleware(request) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://lakika.vercel.app;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://lakika.vercel.app 'unsafe-inline';
     style-src 'self' 'nonce-${nonce}' https://lakika.vercel.app;
     img-src 'self' blob: data: https://lakika.vercel.app;
     font-src 'self' https://lakika.vercel.app;
