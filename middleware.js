@@ -60,3 +60,7 @@ function appendCspHeaders(headers) {
 
   headers.set("Content-Security-Policy", policy);
 }
+
+export const config = {
+  matcher: ["/api/:path*"],
+};
