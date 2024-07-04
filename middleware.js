@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
 const allow_origin_lists = ["https://lakika.vercel.app"];
@@ -6,7 +5,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 export const middleware = async (req) => {
   const origin = req.headers.get("origin");
-  const nonce = nanoid();
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   if (origin && !allow_origin_lists.includes(origin)) {
     return new NextResponse(null, {
