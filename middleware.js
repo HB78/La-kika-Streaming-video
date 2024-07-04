@@ -1,11 +1,12 @@
+import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
 const allow_origin_lists = ["https://lakika.vercel.app"];
-
 const isDevelopment = process.env.NODE_ENV === "development";
 
 export const middleware = async (req) => {
   const origin = req.headers.get("origin");
+  const nonce = nanoid();
 
   if (origin && !allow_origin_lists.includes(origin)) {
     return new NextResponse(null, {
@@ -17,45 +18,55 @@ export const middleware = async (req) => {
     });
   }
 
-  const res = NextResponse.next();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-nonce", nonce);
+
+  const cspHeader = generateCspHeader(nonce);
+  requestHeaders.set("Content-Security-Policy", cspHeader);
+
+  const res = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   // Ajouter les headers CORS
   appendCorsHeaders(res.headers, origin);
 
   // Ajouter les headers CSP
-  appendCspHeaders(res.headers);
+  res.headers.set("Content-Security-Policy", cspHeader);
 
   return res;
 };
 
 function appendCorsHeaders(headers, origin) {
-  headers.append("Access-Control-Allow-Credentials", "true");
-  headers.append("Access-Control-Allow-Origin", origin);
-  headers.append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  headers.append(
+  headers.set("Access-Control-Allow-Credentials", "true");
+  headers.set("Access-Control-Allow-Origin", origin);
+  headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  headers.set(
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version"
   );
 }
 
-function appendCspHeaders(headers) {
+function generateCspHeader(nonce) {
   const policy = isDevelopment
-    ? "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-      "style-src 'self' 'unsafe-inline'; " +
-      "img-src 'self' data: https:; " +
-      "font-src 'self'; " +
-      "connect-src 'self' https:; " +
-      "frame-src 'self';"
-    : "default-src 'self'; " +
-      "script-src 'self' https://lakika.vercel.app; " +
-      "style-src 'self' https://lakika.vercel.app; " +
-      "img-src 'self' data: https:; " +
-      "font-src 'self' https://lakika.vercel.app; " +
-      "connect-src 'self' https:; " +
-      "frame-src 'self';";
+    ? `default-src 'self'; 
+       script-src 'self' 'nonce-${nonce}' 'strict-dynamic'; 
+       style-src 'self' 'nonce-${nonce}'; 
+       img-src 'self' data: https:; 
+       font-src 'self'; 
+       connect-src 'self' https:; 
+       frame-src 'self';`
+    : `default-src 'self'; 
+       script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://lakika.vercel.app; 
+       style-src 'self' 'nonce-${nonce}' https://lakika.vercel.app; 
+       img-src 'self' data: https:; 
+       font-src 'self' https://lakika.vercel.app; 
+       connect-src 'self' https:; 
+       frame-src 'self';`;
 
-  headers.set("Content-Security-Policy", policy);
+  return policy.replace(/\s+/g, " ").trim();
 }
 
 export const config = {
