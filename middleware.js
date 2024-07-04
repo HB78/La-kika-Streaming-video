@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const cspHeader = `
-    default-src 'self' 'self' style-src 'unsafe-inline' https://lakika.vercel.app;
+    default-src 'self' style-src 'unsafe-inline' https://lakika.vercel.app;
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://lakika.vercel.app 'unsafe-inline';
     style-src 'self' 'nonce-${nonce}' https://lakika.vercel.app;
     img-src 'self' blob: data: https://lakika.vercel.app;
