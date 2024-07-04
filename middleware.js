@@ -67,7 +67,3 @@ function generateCspHeader(nonce) {
 
   return policy.replace(/\s+/g, " ").trim();
 }
-
-export const config = {
-  matcher: ["/api/:path*"],
-};
