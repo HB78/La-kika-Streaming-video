@@ -8,7 +8,7 @@ export default async function Home({ params }) {
     {
       next: {
         tags: ["fetchEpisodes"],
-        revalidate: 6,
+        revalidate: 60,
       },
     },
     {
