@@ -1,4 +1,4 @@
-import { createUploadthing } from "uploadthing/next";
+const { createUploadthing } = require("uploadthing/next");
 
 const f = createUploadthing();
 
