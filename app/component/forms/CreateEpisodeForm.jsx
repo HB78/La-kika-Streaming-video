@@ -32,24 +32,25 @@ const CreateEpisodeForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(
-      `https://lakika.vercel.app/api/episode/${data.title}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: data.episode,
-          url: Video,
-        }),
-        // body: JSON.stringify({ ...data, photo: photoUrl }),
+    try {
+      const res = await fetch(
+        `https://lakika.vercel.app/api/episode/${data.title}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: data.episode,
+            url: Video,
+          }),
+        }
+      );
+      if (res.ok) {
+        alert("episode added successfully");
       }
-    );
-    if (res.ok) {
-      alert("episode added successfully");
-    } else {
-      alert("error");
+    } catch (error) {
+      console.log("error: fonction envoie episode", error);
     }
   };
 
