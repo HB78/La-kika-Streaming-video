@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 const VideoPlayerForSerie = ({ episodeOne }) => {
-  // je mets l'épisode 1 dans l'url pour que le player ne soit pas vide
+  // je mets l'épisode 1 dans l'url pour que le player ne soit pas vide dès le chargement de la page
   const [client, setClient] = useState(false);
   const [url, setUrl] = useState(episodeOne);
   const urlParams = useSearchParams();
