@@ -22,6 +22,7 @@ const VideoPlayer = ({ url }) => {
           // picture in picture
           pip={true}
           loop={true}
+          playing={true}
 
           // onEnded={() => console.log("Lecture terminée")}
         />

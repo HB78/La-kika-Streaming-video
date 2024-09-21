@@ -33,10 +33,11 @@ const VideoPlayerForSerie = ({ episodeOne }) => {
           url={url}
           controls={true}
           // light is useful in case of dark mode
-          // light={true}
+          light={true}
           // picture in picture
           pip={true}
           loop={true}
+          playing={true}
 
           // onEnded={() => console.log("Lecture terminée")}
         />
