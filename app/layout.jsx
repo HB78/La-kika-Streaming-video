@@ -1,6 +1,9 @@
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import "@uploadthing/react/styles.css";
+import { extractRouterConfig } from "uploadthing/server";
 import Provider from "./../context/Provider";
 import Favicon from "./../public/k.jpg";
+import { ourFileRouter } from "./api/uploadthing/core";
 import "./globals.css";
 
 export const metadata = {
@@ -25,9 +28,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <Provider>
-        <body>{children}</body>
-      </Provider>
+      <body>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <Provider>{children}</Provider>
+      </body>
     </html>
   );
 }
