@@ -13,7 +13,7 @@ export const POST = async (req) => {
     return new NextResponse("vous n'êtes pas connecté", { status: 401 });
   }
 
-  if (session.user.isAdmin === false) {
+  if (session.user?.isAdmin === false) {
     return new NextResponse("vous n'êtes pas autorisé", { status: 401 });
   }
 
