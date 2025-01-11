@@ -4,7 +4,7 @@ import VideoPlayerForSerie from "./VideoPlayerForSerie";
 const ListOfEpisode = ({ data }) => {
   //dans le link je choisis de passer la data en la mettant dans le query cad dans l'url
   //j'aurais pu aussi la passer en la mettant dans un useState puis passer le state dynamique en props mais il aurait fallu que je passe par un useEffect pour que le state soit dynamique et cela aurait été plus compliqué mais surtout il aurait fallu transformer le composant en client component.
-  // "sm:flex sm:flex-col sm:items-center gap-6 lg:justify-around lg:flex lg:flex-row lg:items-center"
+  // "sm:flex sm:flex-col sm:items-center gap-6 lg:justify-around lg:flex lg:flex-row lg:items-center test"
 
   //on trie les épisodes par date de création
   const sortedEpisodes = data.episodeOwned.sort((a, b) => {
