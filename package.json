@@ -17,7 +17,7 @@
     "@tsparticles/engine": "^3.3.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.3.0",
-    "@uploadthing/react": "^7.0.2",
+    "@uploadthing/react": "^7.1.5",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
     "emailjs": "^4.0.3",
