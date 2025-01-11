@@ -12,7 +12,7 @@ const ListOfEpisode = ({ data }) => {
   });
 
   return (
-    <section className="flex items-center justify-around gap-6 max-lg:flex-row max-md:flex-col">
+    <section className="flex items-center justify-around gap-6 max-lg:flex-col max-xl:flex-row">
       <div className="flex lg:max-w-[300px] lg:h-[250px] lg:overflow-y-scroll overflow-x-scroll overflow-y-hidden w-full lg:flex-col text-white text-3xl whitespace-nowrap scroll-smooth scrollbar-hide cursor-pointer group-hover:inline p-3 shadow-lg shadow-red-500/50">
         {sortedEpisodes.map((item, index) => {
           return (
