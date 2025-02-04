@@ -55,7 +55,11 @@ export const POST = async (req) => {
 };
 
 export const GET = async (req) => {
-  const allSeries = await prisma.serie.findMany();
+  const allSeries = await prisma.serie.findMany({
+    orderBy: {
+      createdAt: "asc", // ou 'desc' si tu veux du plus récent au plus ancien
+    },
+  });
 
   if (!allSeries) {
     return new NextResponse("il n'a plus de series", { status: 400 });
