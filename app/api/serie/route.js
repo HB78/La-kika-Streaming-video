@@ -57,7 +57,7 @@ export const POST = async (req) => {
 export const GET = async (req) => {
   const allSeries = await prisma.serie.findMany({
     orderBy: {
-      createdAt: "asc", // ou 'desc' si tu veux du plus récent au plus ancien
+      createdAt: "desc", // ou 'asc' si tu veux du plus ancien au plus récent
     },
   });
 
