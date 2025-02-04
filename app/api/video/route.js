@@ -55,8 +55,11 @@ export const POST = async (req) => {
 };
 
 export const GET = async (req) => {
-  const allMovies = await prisma.film.findMany();
-  console.log("allMovies:", allMovies);
+  const allMovies = await prisma.film.findMany({
+    orderBy: {
+      createdAt: "desc", // ou 'asc' si tu veux du plus ancien au plus récent
+    },
+  });
 
   if (!allMovies) {
     return new NextResponse("il n'a plus de films", { status: 400 });
