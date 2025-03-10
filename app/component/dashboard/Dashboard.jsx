@@ -27,6 +27,7 @@ import {
 import { deleteEpisode, deleteMovie, deleteSerie } from "@/fetches/fetches";
 import { Film, Trash2, TvIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function DashboardComponent({ movies, tvShows }) {
