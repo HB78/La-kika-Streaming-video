@@ -1,4 +1,4 @@
-import requests from "@/Request";
+import requests from "./../Request";
 import { fetchMovies, fetchSeries } from "./../fetches/fetches";
 import Main from "./component/Main";
 import Navbar from "./component/Navbar";

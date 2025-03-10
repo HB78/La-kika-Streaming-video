@@ -1,13 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "./../../../components/ui/button";
 import {
   deleteEpisode,
   deleteMovie,
   deleteSerie,
 } from "./../../../fetches/fetches"; // Ajuster le chemin d'importation selon ton projet
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Film, Trash2, TvIcon } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Card, CardContent } from "./../../../components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,8 +19,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "./../../../components/ui/dialog";
+import { Input } from "./../../../components/ui/input";
 import {
   Sidebar,
   SidebarContent,
@@ -29,11 +33,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Film, Trash2, TvIcon } from "lucide-react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+} from "./../../../components/ui/sidebar";
 
 export default function DashboardComponent({ movies, tvShows }) {
   const [activeTab, setActiveTab] = useState("movies");

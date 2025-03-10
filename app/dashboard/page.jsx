@@ -1,6 +1,6 @@
-import { fetchMovies } from "@/fetches/fetches";
 import { PrismaClient } from "@prisma/client";
 import DashboardComponent from "../component/dashboard/Dashboard";
+import { fetchMovies } from "./../../fetches/fetches";
 
 const prisma = new PrismaClient();
 
