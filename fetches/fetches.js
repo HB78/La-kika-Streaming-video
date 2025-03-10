@@ -103,7 +103,7 @@ export const deleteMovie = async (id) => {
 };
 
 export const deleteSerie = async (id) => {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/deleteserie`, {
+  const response = await fetch(`https://lakika.vercel.app/api/deleteserie`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -122,18 +122,15 @@ export const deleteSerie = async (id) => {
 };
 
 export const deleteEpisode = async (id) => {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/deleteepisode`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    }
-  );
+  const response = await fetch(`https://lakika.vercel.app/api/deleteepisode`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
 
   if (!response.ok) {
     console.log("response:--> data", response);
