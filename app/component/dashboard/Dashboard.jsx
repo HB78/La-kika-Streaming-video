@@ -38,6 +38,7 @@ export default function DashboardComponent({ movies, tvShows }) {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [localMovies, setLocalMovies] = useState(movies);
   const [localTvShows, setLocalTvShows] = useState(tvShows);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Reformater les données d'épisodes au format attendu par le composant
   const [localEpisodes, setLocalEpisodes] = useState(() => {
@@ -56,38 +57,49 @@ export default function DashboardComponent({ movies, tvShows }) {
   const handleDelete = async () => {
     if (!itemToDelete) return;
 
-    if (itemToDelete.type === "movie") {
-      await deleteMovie(itemToDelete.id);
-      setLocalMovies(
-        localMovies.filter((movie) => movie.id !== itemToDelete.id)
-      );
-    } else if (itemToDelete.type === "tvshow") {
-      await deleteSerie(itemToDelete.id);
-      setLocalTvShows(
-        localTvShows.filter((show) => show.id !== itemToDelete.id)
-      );
-      // Aussi supprimer les épisodes associés
-      const updatedEpisodes = { ...localEpisodes };
-      delete updatedEpisodes[itemToDelete.id];
-      setLocalEpisodes(updatedEpisodes);
+    try {
+      setIsDeleting(true);
 
-      // Si la série supprimée est la série sélectionnée, réinitialiser
-      if (selectedShow === itemToDelete.id) {
-        setSelectedShow(null);
-        setActiveTab("tvshows");
-      }
-    } else if (itemToDelete.type === "episode") {
-      await deleteEpisode(itemToDelete.id);
-      if (selectedShow && localEpisodes[selectedShow]) {
-        // Mise à jour des épisodes pour la série sélectionnée
-        const updatedEpisodes = {
-          ...localEpisodes,
-          [selectedShow]: localEpisodes[selectedShow].filter(
-            (ep) => ep.id !== itemToDelete.id
-          ),
-        };
+      if (itemToDelete.type === "movie") {
+        await deleteMovie(itemToDelete.id);
+        setLocalMovies(
+          localMovies.filter((movie) => movie.id !== itemToDelete.id)
+        );
+      } else if (itemToDelete.type === "tvshow") {
+        await deleteSerie(itemToDelete.id);
+        setLocalTvShows(
+          localTvShows.filter((show) => show.id !== itemToDelete.id)
+        );
+        // Aussi supprimer les épisodes associés
+        const updatedEpisodes = { ...localEpisodes };
+        delete updatedEpisodes[itemToDelete.id];
         setLocalEpisodes(updatedEpisodes);
+
+        // Si la série supprimée est la série sélectionnée, réinitialiser
+        if (selectedShow === itemToDelete.id) {
+          setSelectedShow(null);
+          setActiveTab("tvshows");
+        }
+      } else if (itemToDelete.type === "episode") {
+        await deleteEpisode(itemToDelete.id);
+        if (selectedShow && localEpisodes[selectedShow]) {
+          // Mise à jour des épisodes pour la série sélectionnée
+          const updatedEpisodes = {
+            ...localEpisodes,
+            [selectedShow]: localEpisodes[selectedShow].filter(
+              (ep) => ep.id !== itemToDelete.id
+            ),
+          };
+          setLocalEpisodes(updatedEpisodes);
+        }
       }
+    } catch (error) {
+      console.log("error:", error);
+    } finally {
+      // Fermer la boîte de dialogue et réinitialiser l'état
+      setDeleteDialog(false);
+      setItemToDelete(null);
+      setIsDeleting(false);
     }
 
     setDeleteDialog(false);
@@ -356,8 +368,16 @@ export default function DashboardComponent({ movies, tvShows }) {
             <Button
               className="bg-red-600 hover:bg-red-700"
               onClick={handleDelete}
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-white rounded-full"></div>
+                  Suppression...
+                </>
+              ) : (
+                "Delete"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
