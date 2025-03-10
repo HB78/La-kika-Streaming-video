@@ -253,7 +253,7 @@ export default function DashboardComponent({ movies, tvShows }) {
                         </p>
                       </div>
                       <Button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-600"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 bg-white"
                         onClick={() => confirmDelete("movie", movie.id)}
                       >
                         <Trash2 className="h-6 w-6" />

@@ -84,7 +84,7 @@ export const fetchOneFilm = async (id) => {
 // LES DELETE fetch POUR LE DASHBOARD
 
 export const deleteMovie = async (id) => {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/deletemovie`, {
+  const response = await fetch(`https://lakika.vercel.app/api/deletemovie`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
