@@ -1,7 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { deleteEpisode, deleteMovie, deleteSerie } from "@/fetches/fetches"; // Ajuster le chemin d'importation selon ton projet
+import {
+  deleteEpisode,
+  deleteMovie,
+  deleteSerie,
+} from "./../../../fetches/fetches"; // Ajuster le chemin d'importation selon ton projet
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
