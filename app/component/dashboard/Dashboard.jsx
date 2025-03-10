@@ -138,7 +138,11 @@ export default function DashboardComponent({ movies, tvShows }) {
       <>
         <Sidebar>
           <SidebarHeader>
-            <h1 className="text-2xl font-bold text-netflix-red">StreamAdmin</h1>
+            <Link href={"/"}>
+              <h1 className="text-red-600 text-4xl font-bold cursor-pointer">
+                LA KIKA
+              </h1>
+            </Link>{" "}
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
