@@ -17,21 +17,15 @@ const Main = ({ movies }) => {
   return (
     <header className="w-full h-[550px] text-white lg:h-[580px]">
       <div className="w-full h-full relative">
-        {!randomMovie?.backdrop_path ? (
-          <div className="w-full h-full flex justify-center items-center">
-            <span className="text-red-600 text-4xl font-bold ">La Kika</span>
-          </div>
-        ) : (
-          <Image
-            alt="affiche de film parmis les plus populaires"
-            priority={true}
-            quality={100}
-            sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
-            fill={true}
-            src={`https://image.tmdb.org/t/p/original/${randomMovie?.backdrop_path}`}
-            className="w-full h-full object-cover lg:object-contain"
-          />
-        )}
+        <Image
+          alt="affiche de film parmis les plus populaires"
+          priority={true}
+          quality={100}
+          sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
+          fill={true}
+          src={`https://image.tmdb.org/t/p/original/${randomMovie?.backdrop_path}`}
+          className="w-full h-full object-cover lg:object-contain"
+        />
       </div>
 
       <div className="absolute w-full top-[20%] p-4 md:p-8">

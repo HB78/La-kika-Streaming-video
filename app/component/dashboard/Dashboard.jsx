@@ -24,7 +24,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { deleteEpisode, deleteMovie, deleteSerie } from "@/fetches/fetches";
+import { deleteEpisode, deleteSerie } from "@/fetches/fetches";
 import { Film, Trash2, TvIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +38,6 @@ export default function DashboardComponent({ movies, tvShows }) {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [localMovies, setLocalMovies] = useState(movies);
   const [localTvShows, setLocalTvShows] = useState(tvShows);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   // Reformater les données d'épisodes au format attendu par le composant
   const [localEpisodes, setLocalEpisodes] = useState(() => {
@@ -57,49 +56,38 @@ export default function DashboardComponent({ movies, tvShows }) {
   const handleDelete = async () => {
     if (!itemToDelete) return;
 
-    try {
-      setIsDeleting(true);
+    if (itemToDelete.type === "movie") {
+      // await deleteMovie(itemToDelete.id);
+      setLocalMovies(
+        localMovies.filter((movie) => movie.id !== itemToDelete.id)
+      );
+    } else if (itemToDelete.type === "tvshow") {
+      await deleteSerie(itemToDelete.id);
+      setLocalTvShows(
+        localTvShows.filter((show) => show.id !== itemToDelete.id)
+      );
+      // Aussi supprimer les épisodes associés
+      const updatedEpisodes = { ...localEpisodes };
+      delete updatedEpisodes[itemToDelete.id];
+      setLocalEpisodes(updatedEpisodes);
 
-      if (itemToDelete.type === "movie") {
-        await deleteMovie(itemToDelete.id);
-        setLocalMovies(
-          localMovies.filter((movie) => movie.id !== itemToDelete.id)
-        );
-      } else if (itemToDelete.type === "tvshow") {
-        await deleteSerie(itemToDelete.id);
-        setLocalTvShows(
-          localTvShows.filter((show) => show.id !== itemToDelete.id)
-        );
-        // Aussi supprimer les épisodes associés
-        const updatedEpisodes = { ...localEpisodes };
-        delete updatedEpisodes[itemToDelete.id];
-        setLocalEpisodes(updatedEpisodes);
-
-        // Si la série supprimée est la série sélectionnée, réinitialiser
-        if (selectedShow === itemToDelete.id) {
-          setSelectedShow(null);
-          setActiveTab("tvshows");
-        }
-      } else if (itemToDelete.type === "episode") {
-        await deleteEpisode(itemToDelete.id);
-        if (selectedShow && localEpisodes[selectedShow]) {
-          // Mise à jour des épisodes pour la série sélectionnée
-          const updatedEpisodes = {
-            ...localEpisodes,
-            [selectedShow]: localEpisodes[selectedShow].filter(
-              (ep) => ep.id !== itemToDelete.id
-            ),
-          };
-          setLocalEpisodes(updatedEpisodes);
-        }
+      // Si la série supprimée est la série sélectionnée, réinitialiser
+      if (selectedShow === itemToDelete.id) {
+        setSelectedShow(null);
+        setActiveTab("tvshows");
       }
-    } catch (error) {
-      console.log("error:", error);
-    } finally {
-      // Fermer la boîte de dialogue et réinitialiser l'état
-      setDeleteDialog(false);
-      setItemToDelete(null);
-      setIsDeleting(false);
+    } else if (itemToDelete.type === "episode") {
+      await deleteEpisode(itemToDelete.id);
+      if (selectedShow && localEpisodes[selectedShow]) {
+        // Mise à jour des épisodes pour la série sélectionnée
+        const updatedEpisodes = {
+          ...localEpisodes,
+          [selectedShow]: localEpisodes[selectedShow].filter(
+            (ep) => ep.id !== itemToDelete.id
+          ),
+        };
+        setLocalEpisodes(updatedEpisodes);
+      }
     }
 
     setDeleteDialog(false);
@@ -239,11 +227,10 @@ export default function DashboardComponent({ movies, tvShows }) {
                       <Image
                         src={movie?.photo || "/placeholder.svg"}
                         alt={movie.title || "Movie"}
-                        width={300}
-                        height={450}
+                        width={210}
+                        height={130}
                         quality={80}
-                        priority={index < 6}
-                        loading={index < 6 ? "eager" : "lazy"}
+                        priority
                         className="w-full h-auto object-cover transition-all duration-300"
                       />
                       <div className="p-3">
@@ -253,7 +240,7 @@ export default function DashboardComponent({ movies, tvShows }) {
                         </p>
                       </div>
                       <Button
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 bg-white"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-600"
                         onClick={() => confirmDelete("movie", movie.id)}
                       >
                         <Trash2 className="h-6 w-6" />
@@ -279,11 +266,10 @@ export default function DashboardComponent({ movies, tvShows }) {
                       <Image
                         src={show?.photo || "/placeholder.svg"}
                         alt={show.title || "TV Show"}
-                        width={300}
-                        height={450}
+                        width={210}
+                        height={130}
                         quality={50}
-                        priority={index < 6}
-                        loading={index < 6 ? "eager" : "lazy"}
+                        priority
                         className="w-full h-auto object-cover transition-all duration-300"
                       />
                       <div className="p-3">
@@ -368,16 +354,8 @@ export default function DashboardComponent({ movies, tvShows }) {
             <Button
               className="bg-red-600 hover:bg-red-700"
               onClick={handleDelete}
-              disabled={isDeleting}
             >
-              {isDeleting ? (
-                <>
-                  <div className="animate-spin mr-2 h-4 w-4 border-t-2 border-white rounded-full"></div>
-                  Suppression...
-                </>
-              ) : (
-                "Delete"
-              )}
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>

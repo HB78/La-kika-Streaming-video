@@ -20,11 +20,17 @@ export const DELETE = async (req) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new NextResponse("vous n'êtes pas connecté", { status: 401 });
+    return NextResponse.json({
+      message: "vous n'êtes pas connecté",
+      status: 401,
+    });
   }
 
   if (session?.user.isAdmin === false) {
-    return new NextResponse("vous n'êtes pas autorisé", { status: 401 });
+    return NextResponse.json({
+      message: "vous n'êtes pas autorisé",
+      status: 401,
+    });
   }
 
   const checkIfUserIsAdmin = await prisma.user.findUnique({
@@ -37,7 +43,10 @@ export const DELETE = async (req) => {
   }
 
   if (checkIfUserIsAdmin.isAdmin === false) {
-    return new NextResponse("vous n'avez pas les droits", { status: 401 });
+    return NextResponse.json({
+      message: "vous n'avez pas les droits",
+      status: 401,
+    });
   }
 
   try {
@@ -45,7 +54,10 @@ export const DELETE = async (req) => {
     const { id } = body;
 
     if (!id) {
-      return new NextResponse("il manque de la donnée", { status: 400 });
+      return NextResponse.json({
+        message: "il manque de la donnée",
+        status: 400,
+      });
     }
 
     const movieFounded = await prisma.film.findUnique({
@@ -94,12 +106,6 @@ export const DELETE = async (req) => {
     });
   } catch (error) {
     console.error("Erreur lors de la suppression:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error,
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "deleted successfully", status: 500 });
   }
 };

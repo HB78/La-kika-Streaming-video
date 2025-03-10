@@ -34,7 +34,10 @@ export const middleware = async (req) => {
 function appendCorsHeaders(headers, origin) {
   headers.append("Access-Control-Allow-Credentials", "true");
   headers.append("Access-Control-Allow-Origin", origin);
-  headers.append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  headers.append(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTION"
+  );
   headers.append(
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version"

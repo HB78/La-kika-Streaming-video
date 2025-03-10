@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { Toaster } from "sonner";
-import { authOptions } from "./../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: "Dashboard",
@@ -29,10 +28,5 @@ export default async function RootLayout({ children }) {
     redirect("/");
   }
 
-  return (
-    <body>
-      <Toaster richColors />
-      {children}
-    </body>
-  );
+  return <div>{children}</div>;
 }
