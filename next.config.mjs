@@ -18,6 +18,11 @@ const nextConfig = {
         hostname: "assets.nflxext.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "<APP_ID>.ufs.sh",
+        pathname: "/f/*",
+      },
     ],
   },
 };

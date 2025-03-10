@@ -80,3 +80,65 @@ export const fetchOneFilm = async (id) => {
 
   const responseData = await response.json();
 };
+
+// LES DELETE fetch POUR LE DASHBOARD
+
+export const deleteMovie = async (id) => {
+  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/deletemovie`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Response error");
+  }
+
+  const responseData = await response.json();
+  return responseData;
+};
+
+export const deleteSerie = async (id) => {
+  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/deleteserie`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Response error");
+  }
+
+  const responseData = await response.json();
+  return responseData;
+};
+
+export const deleteEpisode = async (id) => {
+  const response = await fetch(
+    `${process.env.NEXTAUTH_URL}/api/deleteepisode`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Response error");
+  }
+
+  const responseData = await response.json();
+  return responseData;
+};
