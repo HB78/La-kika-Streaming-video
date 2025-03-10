@@ -1,17 +1,7 @@
 "use client";
 
-import { Button } from "./../../../components/ui/button";
-import {
-  deleteEpisode,
-  deleteMovie,
-  deleteSerie,
-} from "./../../../fetches/fetches"; // Ajuster le chemin d'importation selon ton projet
-
-import { Film, Trash2, TvIcon } from "lucide-react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Card, CardContent } from "./../../../components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./../../../components/ui/dialog";
-import { Input } from "./../../../components/ui/input";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Sidebar,
   SidebarContent,
@@ -33,7 +23,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "./../../../components/ui/sidebar";
+} from "@/components/ui/sidebar";
+import { Film, Trash2, TvIcon } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function DashboardComponent({ movies, tvShows }) {
   const [activeTab, setActiveTab] = useState("movies");
@@ -58,66 +51,56 @@ export default function DashboardComponent({ movies, tvShows }) {
     return formattedEpisodes;
   });
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!itemToDelete) return;
 
-    try {
-      setIsDeleting(true);
+    if (itemToDelete.type === "movie") {
+      setLocalMovies(
+        localMovies.filter((movie) => movie.id !== itemToDelete.id)
+      );
+    } else if (itemToDelete.type === "tvshow") {
+      setLocalTvShows(
+        localTvShows.filter((show) => show.id !== itemToDelete.id)
+      );
+      // Aussi supprimer les épisodes associés
+      const updatedEpisodes = { ...localEpisodes };
+      delete updatedEpisodes[itemToDelete.id];
+      setLocalEpisodes(updatedEpisodes);
 
-      switch (itemToDelete.type) {
-        case "movie":
-          await deleteMovie(itemToDelete.id);
-          setLocalMovies(
-            localMovies.filter((movie) => movie.id !== itemToDelete.id)
-          );
-          break;
-
-        case "tvshow":
-          await deleteSerie(itemToDelete.id);
-          setLocalTvShows(
-            localTvShows.filter((show) => show.id !== itemToDelete.id)
-          );
-
-          // Supprimer les épisodes associés
-          const updatedEpisodes = { ...localEpisodes };
-          delete updatedEpisodes[itemToDelete.id];
-          setLocalEpisodes(updatedEpisodes);
-
-          // Réinitialiser si nécessaire
-          if (selectedShow === itemToDelete.id) {
-            setSelectedShow(null);
-            setActiveTab("tvshows");
-          }
-          break;
-
-        case "episode":
-          await deleteEpisode(itemToDelete.id);
-
-          if (selectedShow && localEpisodes[selectedShow]) {
-            setLocalEpisodes({
-              ...localEpisodes,
-              [selectedShow]: localEpisodes[selectedShow].filter(
-                (ep) => ep.id !== itemToDelete.id
-              ),
-            });
-          }
-          break;
-
-        default:
-          console.warn("Type d'élément inconnu:", itemToDelete.type);
-          break;
+      // Si la série supprimée est la série sélectionnée, réinitialiser
+      if (selectedShow === itemToDelete.id) {
+        setSelectedShow(null);
+        setActiveTab("tvshows");
       }
-
-      toast.success(`${itemToDelete.type} supprimé avec succès`);
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error(`Erreur lors de la suppression: ${error.message}`);
-    } finally {
-      setDeleteDialog(false);
-      setItemToDelete(null);
-      setIsDeleting(false);
+    } else if (itemToDelete.type === "episode") {
+      if (selectedShow && localEpisodes[selectedShow]) {
+        // Mise à jour des épisodes pour la série sélectionnée
+        const updatedEpisodes = {
+          ...localEpisodes,
+          [selectedShow]: localEpisodes[selectedShow].filter(
+            (ep) => ep.id !== itemToDelete.id
+          ),
+        };
+        setLocalEpisodes(updatedEpisodes);
+      }
     }
+
+    setDeleteDialog(false);
+    setItemToDelete(null);
   };
+
+  const confirmDelete = (type, id) => {
+    setItemToDelete({ type, id });
+    setDeleteDialog(true);
+  };
+
+  const filteredMovies = localMovies.filter((movie) =>
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTvShows = localTvShows.filter((show) =>
+    show.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Composant interne qui utilise useSidebar
   const DashboardContent = () => {

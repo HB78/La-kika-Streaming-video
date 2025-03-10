@@ -1,6 +1,6 @@
-//compilateur
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
