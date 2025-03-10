@@ -24,6 +24,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { deleteEpisode, deleteMovie, deleteSerie } from "@/fetches/fetches";
 import { Film, Trash2, TvIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -51,14 +52,16 @@ export default function DashboardComponent({ movies, tvShows }) {
     return formattedEpisodes;
   });
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!itemToDelete) return;
 
     if (itemToDelete.type === "movie") {
+      await deleteMovie(itemToDelete.id);
       setLocalMovies(
         localMovies.filter((movie) => movie.id !== itemToDelete.id)
       );
     } else if (itemToDelete.type === "tvshow") {
+      await deleteSerie(itemToDelete.id);
       setLocalTvShows(
         localTvShows.filter((show) => show.id !== itemToDelete.id)
       );
@@ -73,6 +76,7 @@ export default function DashboardComponent({ movies, tvShows }) {
         setActiveTab("tvshows");
       }
     } else if (itemToDelete.type === "episode") {
+      await deleteEpisode(itemToDelete.id);
       if (selectedShow && localEpisodes[selectedShow]) {
         // Mise à jour des épisodes pour la série sélectionnée
         const updatedEpisodes = {
