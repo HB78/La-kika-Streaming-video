@@ -53,6 +53,7 @@ export default function DashboardComponent({ movies, tvShows }) {
     return formattedEpisodes;
   });
 
+  // fonction de suppression
   const handleDelete = async () => {
     if (!itemToDelete) return;
 
