@@ -103,18 +103,15 @@ export const deleteMovie = async (id) => {
 };
 
 export const deleteSerie = async (id) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/deleteserie`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    }
-  );
+  const response = await fetch(`https://lakika.vercel.app/api/deleteserie`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("Response error");
@@ -137,10 +134,10 @@ export const deleteEpisode = async (id) => {
       body: JSON.stringify({ id }),
     });
 
-    console.log("URL effective:", response.url);
+    console.log("URL effective:", response.url); // Ceci montrera l'URL effective utilisée
 
     if (response.ok) {
-      console.log("response:--> data ALPHA", response);
+      console.log("response:--> data", response);
       const responseData = await response.json();
       return responseData;
     } else {
