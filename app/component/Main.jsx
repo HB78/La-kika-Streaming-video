@@ -3,9 +3,7 @@
 import Image from "next/image";
 
 const Main = ({ movies }) => {
-  // Utiliser un index fixe plutôt qu'aléatoire pour éviter l'hydratation incohérente
-  const movieIndex = 0; // Toujours utiliser le premier film pour la cohérence
-  const movie = movies[movieIndex];
+  const randomMovie = movies[Math.floor(Math.random() * movies.length)];
 
   //Pour couper le texte quand il est trop grand
   const truncateString = (str, num) => {
@@ -17,24 +15,21 @@ const Main = ({ movies }) => {
   };
 
   return (
-    <header className="w-full h-[550px] text-white lg:h-[580px] relative">
-      {/* Ajouter un overlay pour améliorer la lisibilité */}
-      <div className="absolute inset-0 bg-black/30 z-10" />
-
+    <header className="w-full h-[550px] text-white lg:h-[580px]">
       <div className="w-full h-full relative">
         <Image
-          alt={movie?.title || "Film en vedette"}
+          alt="affiche de film parmis les plus populaires"
           priority={true}
-          quality={70} // Réduire légèrement la qualité pour accélérer le chargement
-          sizes="100vw" // Simplifier la directive sizes
+          quality={70}
+          sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           fill={true}
-          src={`https://image.tmdb.org/t/p/original/${movie?.backdrop_path}`}
-          className="w-full object-cover lg:object-contain"
+          src={`https://image.tmdb.org/t/p/original/${randomMovie?.backdrop_path}`}
+          className="w-full h-full object-cover lg:object-contain"
         />
       </div>
 
-      <div className="absolute w-full top-[20%] p-4 md:p-8 z-20">
-        <h1 className="text-3xl md:text-5xl font-bold">{movie?.title}</h1>
+      <div className="absolute w-full top-[20%] p-4 md:p-8">
+        <h1 className="text-3xl md:text-5xl font-bold">{randomMovie?.title}</h1>
         <div className="my-4">
           <button
             aria-label="Play Movie"
@@ -44,14 +39,17 @@ const Main = ({ movies }) => {
           </button>
           <button
             aria-label="Add to Watch Later"
-            className="border text-white border-gray-300 py-2 px-5 ml-4 rounded hover:bg-white/20 transition-colors"
+            className="border text-white border-gray-300 bg-transparent py-2 px-5 ml-4"
           >
             Watch Later
           </button>
         </div>
-        <p className="text-gray-400 text-sm">Release : {movie?.release_date}</p>
+        <p className="tex-gray-400 text-sm">
+          Release : {randomMovie?.release_date}
+        </p>
         <p className="w-full md:max-w-[70%] lg:max-w-[50%] xl:max-w-[35%] text-gray-200">
-          {truncateString(movie?.overview, 150)}
+          {" "}
+          {truncateString(randomMovie?.overview, 150)}
         </p>
       </div>
     </header>
