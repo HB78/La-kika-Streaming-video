@@ -122,21 +122,32 @@ export const deleteSerie = async (id) => {
 };
 
 export const deleteEpisode = async (id) => {
-  const response = await fetch("https://lakika.vercel.app/api/deleteepisode", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: id,
-    }),
-  });
+  try {
+    const url = "https://lakika.vercel.app/api/deleteepisode";
+    console.log("URL avant fetch:", url);
 
-  if (!response.ok) {
-    console.log("response:--> data", response);
-    return response;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
+
+    console.log("URL effective:", response.url); // Ceci montrera l'URL effective utilisée
+
+    if (response.ok) {
+      console.log("response:--> data", response);
+      const responseData = await response.json();
+      return responseData;
+    } else {
+      console.log("response 1 error --->", response);
+      console.log("---> response 2", response.json());
+      return response;
+    }
+  } catch (error) {
+    console.log("error:ERROR ULTIME LORS DU FETCH", error);
   }
-
-  const responseData = await response.json();
-  return responseData;
 };
