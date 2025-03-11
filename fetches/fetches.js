@@ -140,7 +140,7 @@ export const deleteEpisode = async (id) => {
     console.log("URL effective:", response.url); // Ceci montrera l'URL effective utilisée
 
     if (response.ok) {
-      console.log("response:--> data", response);
+      console.log("response:--> data ALPHA", response);
       const responseData = await response.json();
       return responseData;
     } else {
