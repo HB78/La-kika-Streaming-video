@@ -84,7 +84,7 @@ export const fetchOneFilm = async (id) => {
 // LES DELETE fetch POUR LE DASHBOARD
 
 export const deleteMovie = async (id) => {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/deletemovie`, {
+  const response = await fetch(`/api/deletemovie`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -122,31 +122,22 @@ export const deleteSerie = async (id) => {
 };
 
 export const deleteEpisode = async (id) => {
-  try {
-    const url = "/api/deleteepisode";
-    console.log("URL avant fetch:", url);
+  const response = await fetch(`https://lakika.vercel.app/api/deleteepisode`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
 
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
-    });
-
-    console.log("URL effective:", response.url); // Ceci montrera l'URL effective utilisée
-
-    if (response.ok) {
-      console.log("response:--> data", response);
-      const responseData = await response.json();
-      return responseData;
-    } else {
-      const responseData = await response.json();
-      console.log("response 1 error --->", response);
-      console.log("---> response 2", responseData);
-      return response;
-    }
-  } catch (error) {
-    console.log("error:ERROR ULTIME LORS DU FETCH", error);
+  if (!response.ok) {
+    console.log("response:--> data", response);
+    throw new Error("Response error");
   }
+
+  const responseData = await response.json();
+  console.log("responseData:--> ", responseData);
+  return responseData;
 };
