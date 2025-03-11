@@ -143,8 +143,9 @@ export const deleteEpisode = async (id) => {
       const responseData = await response.json();
       return responseData;
     } else {
+      const responseData = await response.json();
       console.log("response 1 error --->", response);
-      console.log("---> response 2", response.json());
+      console.log("---> response 2", responseData);
       return response;
     }
   } catch (error) {
