@@ -1,8 +1,10 @@
 "use client";
+
 import { useCallback, useMemo, useRef, useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import InputSearch from "./InputSearch";
 import Movie from "./Movie";
+
 const Row = ({ title, moviesFetched, rowID }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,7 +32,7 @@ const Row = ({ title, moviesFetched, rowID }) => {
   }, []);
 
   return (
-    <section>
+    <section className="mb-8">
       <div className="flex justify-between items-center">
         <h2 className="text-white font-bold md:text-xl p-4">{title}</h2>
         <InputSearch
@@ -49,9 +51,9 @@ const Row = ({ title, moviesFetched, rowID }) => {
         <div
           id={"slider" + rowID}
           ref={sliderRef}
-          className="w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide group-hover:block relative"
+          className="flex gap-3 w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide group-hover:block relative"
         >
-          {filteredMovies?.map((item, index) => {
+          {filteredMovies?.map((item) => {
             return <Movie key={item.id} item={item} />;
           })}
         </div>

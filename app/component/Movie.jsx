@@ -31,7 +31,7 @@ const Movie = ({ item }) => {
           aria-hidden="true"
           className="absolute top-0 left-0 w-full h-full hover:bg-black/80 opacity-0 text-white hover:opacity-100"
         >
-          <p className="text-center whitespace-normal text-xs md:text-sm font-bold flex justify-center items-center h-full">
+          <p className="text-center whitespace-normal text-sm md:text-sm font-bold flex justify-center items-center h-full">
             {item?.title}
           </p>
         </div>
