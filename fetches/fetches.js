@@ -122,7 +122,7 @@ export const deleteSerie = async (id) => {
 };
 
 export const deleteEpisode = async (id) => {
-  const response = await fetch(`https://lakika.vercel.app/api/deleteepisode`, {
+  const response = await fetch("https://lakika.vercel.app/api/deleteepisode", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -134,10 +134,9 @@ export const deleteEpisode = async (id) => {
 
   if (!response.ok) {
     console.log("response:--> data", response);
-    throw new Error("Response error");
+    return response;
   }
 
   const responseData = await response.json();
-  console.log("responseData:--> ", responseData);
   return responseData;
 };
