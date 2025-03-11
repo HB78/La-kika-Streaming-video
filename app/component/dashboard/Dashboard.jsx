@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { deleteEpisode, deleteSerie } from "@/fetches/fetches";
-import { Film, Trash2, TvIcon } from "lucide-react";
+import { Film, FolderPlus, Trash2, TvIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -160,6 +160,19 @@ export default function DashboardComponent({ movies, tvShows }) {
                   <Film className="mr-2" />
                   <span>Movies</span>
                 </SidebarMenuButton>
+                <SidebarMenuButton
+                  onClick={() => {
+                    setActiveTab("movies");
+                    setSelectedShow(null);
+                    if (isMobile) setMobileOpen(false);
+                  }}
+                  isActive={activeTab === "movies"}
+                >
+                  <FolderPlus className="mr-2" />
+                  <span>
+                    <Link href={"/movie"}>Add Movies and Series</Link>
+                  </span>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -190,7 +203,7 @@ export default function DashboardComponent({ movies, tvShows }) {
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <p className="text-sm text-neutral-400">© 2025 StreamAdmin</p>
+            <p className="text-sm text-neutral-400">© 2025 LAKIKA</p>
           </SidebarFooter>
         </Sidebar>
 

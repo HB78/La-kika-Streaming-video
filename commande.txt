@@ -7,3 +7,9 @@ git config --global -e
 https://blog.logrocket.com/using-cors-next-js-handle-cross-origin-requests/
 
       <Row rowID="1" title="UpComing" moviesFetched={upcoming} />
+
+en cas de module not found dans vercel
+git rm -r --cached .
+git add --all .
+git commit -a -m "Versioning untracked files"
+git push origin master
