@@ -15,7 +15,7 @@ const Movie = ({ item }) => {
       <article
         className="w-[180px]  md:w-[260px] lg:w-[300px]
     h-[160px]  md:h-[245px] lg:h-[200px] 
-    inline-block cursor-pointer relative ml-3"
+    inline-block cursor-pointer relative ml-3 transition-transform duration-300 hover:scale-105"
       >
         <Image
           fill
