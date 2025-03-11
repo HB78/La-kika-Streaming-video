@@ -57,7 +57,7 @@ export default function DashboardComponent({ movies, tvShows }) {
     if (!itemToDelete) return;
 
     if (itemToDelete.type === "movie") {
-      // await deleteMovie(itemToDelete.id);
+      await deleteMovie(itemToDelete.id);
       setLocalMovies(
         localMovies.filter((movie) => movie.id !== itemToDelete.id)
       );
