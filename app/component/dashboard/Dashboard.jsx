@@ -160,14 +160,7 @@ export default function DashboardComponent({ movies, tvShows }) {
                   <Film className="mr-2" />
                   <span>Movies</span>
                 </SidebarMenuButton>
-                <SidebarMenuButton
-                  onClick={() => {
-                    setActiveTab("movies");
-                    setSelectedShow(null);
-                    if (isMobile) setMobileOpen(false);
-                  }}
-                  isActive={activeTab === "movies"}
-                >
+                <SidebarMenuButton>
                   <FolderPlus className="mr-2" />
                   <span>
                     <Link href={"/movie"}>Add Movies and Series</Link>
