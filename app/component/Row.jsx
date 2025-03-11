@@ -32,7 +32,7 @@ const Row = ({ title, moviesFetched, rowID }) => {
   }, []);
 
   return (
-    <section className="mb-3">
+    <section>
       <div className="flex justify-between items-center">
         <h2 className="text-white font-bold md:text-xl p-4">{title}</h2>
         <InputSearch
