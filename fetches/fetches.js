@@ -123,7 +123,7 @@ export const deleteSerie = async (id) => {
 
 export const deleteEpisode = async (id) => {
   try {
-    const url = "https://lakika.vercel.app/api/deleteepisode";
+    const url = "/api/deleteepisode";
     console.log("URL avant fetch:", url);
 
     const response = await fetch(url, {
