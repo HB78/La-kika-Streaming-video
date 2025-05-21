@@ -150,7 +150,7 @@ export function DropZone({ getInfo }) {
               ) : (
                 <div className="flex flex-col items-center justify-center w-full h-16 bg-violet-50 rounded-lg">
                   <ImageIcon className="w-12 h-12 text-violet-400" />
-                  <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+                  <p className="text-sm text-gray-500 mt-2">Uploading..</p>
                 </div>
               )}
             </div>
