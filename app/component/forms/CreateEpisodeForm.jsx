@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import UploadVideo from "../UploadVideo";
+import { DropZoneVideo } from "../dropzones/DropZoneVideo";
 
 const CreateEpisodeForm = () => {
   const [Video, setVideo] = useState("");
@@ -54,7 +54,7 @@ const CreateEpisodeForm = () => {
   };
 
   return (
-    <section className="max-w-[320px] mx-auto py-3">
+    <section className="w-full mx-auto py-3">
       <h1 className="text-2xl font-bold">Add an episode</h1>
 
       <form
@@ -83,7 +83,7 @@ const CreateEpisodeForm = () => {
           name="Add an episode"
         />
         <div className="flex flex-col gap-3">
-          <UploadVideo getInfo={getVideoUrl} />
+          <DropZoneVideo getInfo={getVideoUrl} />
         </div>
         <nav className="w-full text-md flex justify-between">
           <Link href={"/movie/newserie"} className="w-full">

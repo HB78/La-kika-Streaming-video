@@ -1,0 +1,22 @@
+AVEC LES SERVER ACTION 
+
+quand on fait une server action dans un composoant client et que ce meme composant client
+est importé dans un autre composant client il vaut mieux utilisé onClick avec un bouton classique
+
+Ou deuxieme solution on fait un formulaire classique avec un onSubmit et un preventDefault
+
+Etape 1
+ <div className="text-red-500 absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <Button
+                variant={"destructive"}
+                className="cursor-pointer"
+                disabled={isPending && status !== "error"}
+                type="submit"
+                onClick={() => handleDelete(id, file.name)}
+              >
+                <XIcon className="w-4 h-4" />
+              </Button>
+            </div>
+
+Etape 2
+Utilise un formulaire comme tu le ferais de manière classique

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import UploadImage from "../UploadImage";
+import { DropZone } from "../dropzones/DropZone";
 
 const CreateSerieForm = () => {
   const [photoUrl, setPhotoUrl] = useState("");
@@ -69,7 +69,8 @@ const CreateSerieForm = () => {
           name="Add a serie"
         />
         <div className="flex flex-col gap-3">
-          <UploadImage getInfo={getInfo} />
+          {/* <UploadImage getInfo={getInfo} /> */}
+          <DropZone getInfo={getInfo} />
         </div>
       </form>
       <nav className="w-full text-md flex justify-between">

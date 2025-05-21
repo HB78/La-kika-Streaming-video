@@ -23,6 +23,11 @@ const nextConfig = {
         hostname: "<APP_ID>.ufs.sh",
         pathname: "/f/*",
       },
+      {
+        protocol: "https",
+        hostname: "lime-worried-lungfish-409.mypinata.cloud",
+        pathname: "**",
+      },
     ],
   },
 };

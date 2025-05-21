@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import UploadImage from "../UploadImage";
-import UploadVideo from "../UploadVideo";
+import { DropZone } from "../dropzones/DropZone";
+import { DropZoneVideo } from "../dropzones/DropZoneVideo";
 
 const CreateMovieForm = () => {
   const [photoUrl, setPhotoUrl] = useState("");
@@ -61,42 +61,70 @@ const CreateMovieForm = () => {
   };
 
   return (
-    <div className="max-w-[320px] mx-auto py-10">
-      <h1 className="text-3xl font-bold">Add a movie</h1>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full h-auto flex flex-col py-4"
-      >
-        <input
-          className="p-3 my-2 bg-gray-700 rounded focus:border-red-500 focus:outline-none focus:border"
-          type="text"
-          placeholder="Nom du film"
-          id="title"
-          {...register("title")}
-        />
-        <small>{errors.title?.message}</small>
-        <input
-          type="submit"
-          aria-label="Ajouter un film"
-          className="bg-red-600 py-3 my-6 rounded font-bold"
-          name="Add a movie"
-        />
-        <div className="flex flex-col gap-3">
-          <UploadImage getInfo={getInfo} />
-          <UploadVideo getInfo={getVideoUrl} />
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Champ titre */}
+        <div className="space-y-2">
+          <input
+            className="w-full p-3 bg-netflix-dark border border-netflix-red/20 rounded-lg focus:ring-2 focus:ring-netflix-red focus:border-netflix-red focus:outline-none transition-all"
+            type="text"
+            placeholder="Entrez le titre du film"
+            id="title"
+            {...register("title")}
+          />
+          {errors.title && (
+            <p className="text-netflix-red text-sm">{errors.title.message}</p>
+          )}
         </div>
+
+        {/* Zones de dépôt */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Image de couverture
+            </label>
+            <DropZone getInfo={getInfo} />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Vidéo du film
+            </label>
+            <DropZoneVideo getInfo={getVideoUrl} />
+          </div>
+        </div>
+
+        {/* Bouton de soumission */}
+        <button
+          type="submit"
+          className="w-full bg-netflix-red hover:bg-netflix-red/90 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02]"
+        >
+          Ajouter le film
+        </button>
       </form>
-      <nav className="w-full text-md flex justify-between">
-        <Link href={"/movie/newserie"} className="w-full">
-          create a serie
-        </Link>
-        <Link href={"/movie/newepisode"} className="w-full">
-          new episode
-        </Link>
-        <Link href={"/movie"} className="w-full">
-          create a movie
-        </Link>
-      </nav>
+
+      {/* Navigation */}
+      <div className="pt-6 border-t border-netflix-red/20">
+        <div className="grid grid-cols-3 gap-4">
+          <Link
+            href="/movie/newserie"
+            className="text-center text-white py-2 px-4 bg-red-400 hover:bg-red-500 border border-netflix-red/20 rounded-lg transition-colors duration-200 text-sm"
+          >
+            Créer une série
+          </Link>
+          <Link
+            href="/movie/newepisode"
+            className="text-center text-white py-2 px-4 bg-red-400 hover:bg-red-500 border border-netflix-red/20 rounded-lg transition-colors duration-200 text-sm"
+          >
+            Nouvel épisode
+          </Link>
+          <Link
+            href="/movie"
+            className="text-center text-white py-2 px-4 bg-red-400 hover:bg-red-500 border border-netflix-red/20 rounded-lg transition-colors duration-200 text-sm"
+          >
+            Créer un film
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
