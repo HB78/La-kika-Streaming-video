@@ -1,3 +1,5 @@
+import { authOptions } from "../api/auth/[...nextauth]/route";
+
 export const metadata = {
   title: "Creation de film",
   description: "Page de création de film pour les administrateurs",

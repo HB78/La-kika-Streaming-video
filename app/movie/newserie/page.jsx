@@ -1,7 +1,16 @@
+import { getServerSession } from "next-auth/next";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+import { authOptions } from "../../api/auth/[...nextauth]/route";
 import CreateSerieForm from "../../component/forms/CreateSerieForm";
 
-const Home = () => {
+const Home = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <main className="w-full min-h-screen relative overflow-hidden">
       {/* Image de fond optimisée avec priority pour le LCP */}
