@@ -43,7 +43,7 @@ export function DropZoneVideo({ getInfo }) {
 
       const url = await pinata.gateways.public.convert(upload.cid);
       console.log("url:--> PETIT FILM", url);
-      getInfo(url);
+      await getInfo(url);
 
       // Update states after successful upload
       setUrls((prevUrls) => [...prevUrls, url]);
@@ -104,7 +104,7 @@ export function DropZoneVideo({ getInfo }) {
                 throw new Error("No CID found for uploaded file");
               }
               const url = await pinata.gateways.public.convert(fileInfo.cid);
-              getInfo(url);
+              await getInfo(url);
               console.log("url:", url);
               console.log("url: ----> film", url);
 

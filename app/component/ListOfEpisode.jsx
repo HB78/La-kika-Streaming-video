@@ -6,6 +6,31 @@ const ListOfEpisode = ({ data }) => {
   //j'aurais pu aussi la passer en la mettant dans un useState puis passer le state dynamique en props mais il aurait fallu que je passe par un useEffect pour que le state soit dynamique et cela aurait été plus compliqué mais surtout il aurait fallu transformer le composant en client component.
   // "sm:flex sm:flex-col sm:items-center gap-6 lg:justify-around lg:flex lg:flex-row lg:items-center"
 
+  // État de chargement
+  if (!data) {
+    return (
+      <section className="flex items-center justify-center gap-6">
+        <div className="text-white text-xl text-center p-6 bg-gray-800/50 rounded-lg">
+          <p>Chargement des épisodes...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Vérifier si data.episodeOwned existe et a des éléments
+  if (!data.episodeOwned || data.episodeOwned.length === 0) {
+    return (
+      <section className="flex items-center justify-center gap-6">
+        <div className="text-white text-xl text-center p-6 bg-gray-800/50 rounded-lg">
+          <p>Aucun épisode disponible pour le moment.</p>
+          <p className="text-sm text-gray-400 mt-2">
+            Les épisodes seront ajoutés prochainement.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   //on trie les épisodes par date de création
   const sortedEpisodes = data.episodeOwned.sort((a, b) => {
     return new Date(a.createdAt) - new Date(b.createdAt);

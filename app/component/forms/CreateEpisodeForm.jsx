@@ -13,7 +13,11 @@ const CreateEpisodeForm = () => {
   //on créer le schéma de verification des input avec yup
   const schema = yup.object().shape({
     title: yup.string("entrez un nom valide").required("remplissez le champs"),
+    episode: yup
+      .string("entrez un nom valide")
+      .required("remplissez le champs"),
   });
+
   //on créer les constante de validation des input avec react-hook-form
   const {
     register,
@@ -24,14 +28,16 @@ const CreateEpisodeForm = () => {
   });
 
   function getVideoUrl(infoData) {
-    let data = infoData;
-    setVideo((prevPhotoUrl) => {
-      console.log("--> LA videoUrl", prevPhotoUrl);
-      return data.url;
-    });
+    console.log("infoData:", infoData);
+    console.log("Video:", Video);
+    setVideo(infoData);
   }
 
   const onSubmit = async (data) => {
+    if (!Video) {
+      alert("Veuillez d'abord uploader une vidéo");
+      return;
+    }
     const res = await fetch(
       `https://lakika.vercel.app/api/episode/${data.title}`,
       {
@@ -82,9 +88,6 @@ const CreateEpisodeForm = () => {
           className="bg-red-600 py-3 my-6 rounded font-bold cursor-pointer hover:bg-red-700"
           name="Add an episode"
         />
-        <div className="flex flex-col gap-3">
-          <DropZoneVideo getInfo={getVideoUrl} />
-        </div>
         <nav className="w-full text-md flex justify-between">
           <Link href={"/movie/newserie"} className="w-full">
             create a serie
@@ -103,6 +106,9 @@ const CreateEpisodeForm = () => {
           Return to website
         </Link>
       </form>
+      <div className="flex flex-col gap-3">
+        <DropZoneVideo getInfo={getVideoUrl} />
+      </div>
     </section>
   );
 };

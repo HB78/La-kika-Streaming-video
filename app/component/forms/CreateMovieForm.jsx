@@ -24,23 +24,19 @@ const CreateMovieForm = () => {
   });
 
   function getInfo(info) {
-    let data = info;
-    setPhotoUrl((prevPhotoUrl) => {
-      console.log("--> LA photoUrl", prevPhotoUrl);
-      return data.url;
-    });
+    console.log("--> LA photoUrl", photoUrl);
+    console.log("--> LA info", info);
+    setPhotoUrl(info); // Pas besoin de return ici
   }
 
   function getVideoUrl(infoData) {
-    let data = infoData;
-    setPhotoVideo((prevPhotoUrl) => {
-      console.log("--> LA videoUrl", prevPhotoUrl);
-      return data.url;
-    });
+    console.log("--> LA videoUrl", Video);
+    console.log("--> LA info", infoData);
+    setPhotoVideo(infoData); // Pas besoin de return ici
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`https://lakika.vercel.app/api/video`, {
+    const res = await fetch(`http://localhost:3000/api/video`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +62,7 @@ const CreateMovieForm = () => {
         {/* Champ titre */}
         <div className="space-y-2">
           <input
-            className="w-full p-3 bg-netflix-dark border border-netflix-red/20 rounded-lg focus:ring-2 focus:ring-netflix-red focus:border-netflix-red focus:outline-none transition-all"
+            className="text-white w-full p-3 bg-netflix-dark border border-netflix-red/20 rounded-lg focus:ring-2 focus:ring-netflix-red focus:border-netflix-red focus:outline-none transition-all"
             type="text"
             placeholder="Entrez le titre du film"
             id="title"
@@ -77,22 +73,6 @@ const CreateMovieForm = () => {
           )}
         </div>
 
-        {/* Zones de dépôt */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Image de couverture
-            </label>
-            <DropZone getInfo={getInfo} />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Vidéo du film
-            </label>
-            <DropZoneVideo getInfo={getVideoUrl} />
-          </div>
-        </div>
-
         {/* Bouton de soumission */}
         <button
           type="submit"
@@ -101,6 +81,21 @@ const CreateMovieForm = () => {
           Ajouter le film
         </button>
       </form>
+      {/* Zones de dépôt */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">
+            Image de couverture
+          </label>
+          <DropZone getInfo={getInfo} />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-300">
+            Vidéo du film
+          </label>
+          <DropZoneVideo getInfo={getVideoUrl} />
+        </div>
+      </div>
 
       {/* Navigation */}
       <div className="pt-6 border-t border-netflix-red/20">

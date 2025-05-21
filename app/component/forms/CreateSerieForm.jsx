@@ -22,11 +22,9 @@ const CreateSerieForm = () => {
   });
 
   function getInfo(info) {
-    let data = info;
-    setPhotoUrl((prevPhotoUrl) => {
-      console.log("--> LA photoUrl", prevPhotoUrl);
-      return data.url;
-    });
+    console.log("--> LA photoUrl", photoUrl);
+    console.log("--> LA info", info);
+    setPhotoUrl(info); // Pas besoin de return ici
   }
 
   const onSubmit = async (data) => {
@@ -68,11 +66,11 @@ const CreateSerieForm = () => {
           className="bg-red-600 py-3 my-6 rounded font-bold"
           name="Add a serie"
         />
-        <div className="flex flex-col gap-3">
-          {/* <UploadImage getInfo={getInfo} /> */}
-          <DropZone getInfo={getInfo} />
-        </div>
       </form>
+      <div className="flex flex-col gap-3">
+        {/* <UploadImage getInfo={getInfo} /> */}
+        <DropZone getInfo={getInfo} />
+      </div>
       <nav className="w-full text-md flex justify-between">
         <Link href={"/movie/newserie"} className="w-full">
           create a serie

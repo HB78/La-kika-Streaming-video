@@ -30,7 +30,7 @@ export function DropZone({ getInfo }) {
           .file(file)
           .url(urlResponse.url); // Upload the file with the signed URL
         const url = await pinata.gateways.public.convert(upload.cid); // Convert CID to URL
-        getInfo(url);
+        await getInfo(url);
 
         // Ajoutez ici le code pour gérer le succès de l'upload
         setUrls((prevUrls) => [...prevUrls, url]); // Store the URL of the uploaded image
@@ -154,16 +154,16 @@ export function DropZone({ getInfo }) {
                 </div>
               )}
             </div>
-            <form className="text-white bg-red-500 absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
+            <div className="text-white bg-red-500 absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
               <Button
-                action={() => handleDelete(id, file.name)}
+                onClick={() => handleDelete(id, file.name)}
                 variant="destructive"
                 disabled={isPending}
                 type="submit"
               >
                 <XIcon className="w-3 h-3" />
               </Button>
-            </form>
+            </div>
           </div>
         ))}
       </div>
