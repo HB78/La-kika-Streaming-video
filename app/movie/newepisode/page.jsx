@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import CreateEpisodeForm from "../../component/forms/CreateEpisodeForm";
 export const dynamic = "force-dynamic";

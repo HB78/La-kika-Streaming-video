@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import CreateMovieForm from "../component/forms/CreateMovieForm";
 
