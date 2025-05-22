@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { authOptions } from "./../../auth/[...nextauth]/route";
-
-const prisma = new PrismaClient();
 
 export const POST = async (req, { params }) => {
   const session = await getServerSession(authOptions);

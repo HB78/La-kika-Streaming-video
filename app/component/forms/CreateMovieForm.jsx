@@ -36,7 +36,7 @@ const CreateMovieForm = () => {
   }
 
   const onSubmit = async (data) => {
-    const res = await fetch(`http://localhost:3000/api/video`, {
+    const res = await fetch(`https://lakika.vercel.app/api/video`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -113,10 +113,10 @@ const CreateMovieForm = () => {
             Nouvel épisode
           </Link>
           <Link
-            href="/movie"
+            href="/dashboard"
             className="text-center text-white py-2 px-4 bg-red-400 hover:bg-red-500 border border-netflix-red/20 rounded-lg transition-colors duration-200 text-sm"
           >
-            Créer un film
+            Dashboard
           </Link>
         </div>
       </div>

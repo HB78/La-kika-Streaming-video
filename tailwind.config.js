@@ -45,11 +45,11 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        netflix: {
-          red: "#E50914",
-          black: "#000000",
-          dark: "#141414",
-        },
+        "netflix-red": "#E50914",
+        "netflix-black": "#141414",
+        "netflix-dark": "#181818",
+        "netflix-gray": "#808080",
+        "netflix-light": "#E5E5E5",
         borderRadius: {
           lg: "var(--radius)",
           md: "calc(var(--radius) - 2px)",
@@ -63,6 +63,11 @@ module.exports = {
       },
       animation: {
         spotlight: "spotlight 2s ease .75s 1 forwards",
+        "netflix-spin": "netflix-spin 1.2s linear infinite",
+        "netflix-spin-2": "netflix-spin 1.8s linear infinite reverse",
+        "netflix-spin-3": "netflix-spin 2.4s linear infinite",
+        "netflix-spinner": "netflixSpinner 1s linear infinite",
+        "netflix-logo": "netflixLogo 2s ease-in-out infinite",
       },
       keyframes: {
         spotlight: {
@@ -75,6 +80,21 @@ module.exports = {
             transform: "translate(-50%,-40%) scale(1)",
           },
         },
+        "netflix-spin": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        netflixSpinner: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        netflixLogo: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
+        },
+      },
+      fontFamily: {
+        netflix: ["Netflix Sans", "sans-serif"],
       },
     },
   },

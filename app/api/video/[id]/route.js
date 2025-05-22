@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import { NextResponse } from "next/server";
-const prisma = new PrismaClient();
 
 export const GET = async (req, { params }) => {
   //il y a deux facon de recuperer l'id

@@ -24,7 +24,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { deleteEpisode, deleteSerie } from "@/fetches/fetches";
+import { deleteEpisode, deleteMovie, deleteSerie } from "@/fetches/fetches";
 import { Film, FolderPlus, Trash2, TvIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

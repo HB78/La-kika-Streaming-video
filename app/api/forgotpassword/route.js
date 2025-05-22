@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-const prisma = new PrismaClient();
 
 function validateEmail(email) {
   var re =

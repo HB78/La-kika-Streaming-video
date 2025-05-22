@@ -1,14 +1,12 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "./../auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
-const prisma = new PrismaClient();
 
 export const POST = async (req) => {
   const session = await getServerSession(authOptions);
-  console.log("session:", session);
 
   if (!session) {
     return new NextResponse("vous n'êtes pas connecté", { status: 401 });

@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-const prisma = new PrismaClient();
 
 export const PUT = async (req, { params }) => {
   const { token } = params;

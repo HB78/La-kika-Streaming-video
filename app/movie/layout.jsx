@@ -1,18 +1,40 @@
+import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+
 export const metadata = {
   title: "Creation de film",
   description: "Page de création de film pour les administrateurs",
 };
 
-export default async function RootLayout({ children }) {
-  const session = await getServerSession(authOptions);
+// Sans singleton : À chaque client qui arrive, on ouvre un nouveau restaurant (inefficace)
+// Avec singleton : On a un seul restaurant qui sert tous les clients (efficace)
 
-  if (session?.user?.isAdmin === false || !session) {
-    //J'ai opté pour la redirction mais j'aurais pu aussi afficher un message d'erreur dans une div que j'a
+export default async function RootLayout({ children }) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      redirect("/");
+    }
+
+    // Vérification en base de données d'abord
+    const checkIfUserIsAdmin = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isAdmin: true },
+    });
+
+    // verfie si checkIfUserIsAdmin undefined ou null
+    //verifie si checkIfUserIsAdmin.isAdmin est false ou true ou undefined ou null
+    //necessite ? et !
+    if (!checkIfUserIsAdmin?.isAdmin) {
+      redirect("/");
+    }
+
+    return <>{children}</>;
+  } catch (error) {
+    console.error("Error in movie layout:", error);
     redirect("/");
   }
-
-  return <div>{children}</div>;
 }

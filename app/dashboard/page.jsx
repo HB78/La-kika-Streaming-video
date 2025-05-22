@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/singleton/prisma";
 import DashboardComponent from "../component/dashboard/Dashboard";
 import { fetchMovies } from "./../../fetches/fetches";
-
-const prisma = new PrismaClient();
 
 const Allepisodes = async () => {
   try {
