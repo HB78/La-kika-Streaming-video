@@ -36,14 +36,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# lib and utils
+/lib
+/utils
+
 certificates
 
-# l'api
-# app/api/
+l'api
+app/api/
 
-# le dossier fetchs
-# app/fetchs/
+le dossier fetchs
+app/fetchs/
 
 actions
 
 /update
+
