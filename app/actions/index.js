@@ -1,0 +1,1 @@
+export { deleteImagesAction } from "./deleteImagesAction";
