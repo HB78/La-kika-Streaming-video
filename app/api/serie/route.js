@@ -35,7 +35,7 @@ export const POST = async (req) => {
 
   try {
     const newSerie = await prisma.serie.create({
-      data: { title, photo },
+      data: { title: title.trim(), photo },
     });
     console.log("newSerie:", newSerie);
 

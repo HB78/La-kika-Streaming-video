@@ -37,7 +37,7 @@ export const POST = async (req) => {
 
   try {
     const newMovie = await prisma.film.create({
-      data: { title, photo, url },
+      data: { title: title.trim(), photo, url },
     });
 
     return new NextResponse("film ajouté avec succes", {

@@ -30,7 +30,7 @@ export const POST = async (req, { params }) => {
   const serie = await prisma.serie.findFirst({
     where: {
       title: {
-        equals: secondId,
+        equals: secondId.trim(),
       },
     },
   });
@@ -49,7 +49,7 @@ export const POST = async (req, { params }) => {
   try {
     const newEpisode = await prisma.episode.create({
       data: {
-        title: title,
+        title: title.trim(),
         url: url,
         serieOwnerId: serie.id,
       },
