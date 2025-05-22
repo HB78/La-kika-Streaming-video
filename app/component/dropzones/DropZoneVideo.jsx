@@ -1,5 +1,5 @@
 "use client";
-import { deleteImagesAction } from "@/actions/deleteImagesAction";
+import { deleteImagesAction } from "@/app/actions/deleteImagesAction";
 import { pinata } from "@/app/utils/config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
