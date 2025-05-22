@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useCallback, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { deleteImagesAction } from "./../../actions/deleteImagesAction";
+import { deleteImagesAction } from "../../../actions/deleteImagesAction";
 
 // files sont tous les fichiers uploadés regroupés dans un array et acceptedFiles sont les fichiers que l'on vient de glisser dans le dropzone
 
