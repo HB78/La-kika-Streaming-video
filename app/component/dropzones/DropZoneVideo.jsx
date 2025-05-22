@@ -1,4 +1,5 @@
 "use client";
+import { deleteImagesAction } from "@/app/actions";
 import { pinata } from "@/app/utils/config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,7 +8,6 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import * as tus from "tus-js-client";
-import { deleteImagesAction } from "../../../actions/deleteImagesAction";
 
 export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
