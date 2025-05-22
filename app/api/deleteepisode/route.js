@@ -1,115 +1,110 @@
-// //je n'ai pas voulu cette fois ci  [id] dans la route API
-// //je voulais inclure id dans le body et non dans l'url API
-// //je voulais gagner du temps et simplifier la logique
+//je n'ai pas voulu cette fois ci  [id] dans la route API
+//je voulais inclure id dans le body et non dans l'url API
+//je voulais gagner du temps et simplifier la logique
 
-// import { PrismaClient } from "@prisma/client";
-// import { getServerSession } from "next-auth";
-// import { revalidatePath } from "next/cache";
-// import { NextResponse } from "next/server";
-// import { UTApi } from "uploadthing/server";
-// import { authOptions } from "../auth/[...nextauth]/route";
-// export const dynamic = "force-dynamic";
+import { pinata } from "@/app/utils/config";
+import { extractFileIdFromUrl } from "@/lib/dryApiFunction/extractUrl";
+import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
+import prisma from "@/lib/singleton/prisma";
+import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 
-// export const utapi = new UTApi();
+export const DELETE = async (req) => {
+  // Vérification si l'utilisateur est admin
+  const adminCheck = await isAdmin();
 
-// const prisma = new PrismaClient();
+  // Vérifier si c'est une erreur
+  if (adminCheck.status !== 200) {
+    return adminCheck; // Retourner directement l'erreur
+  }
 
-// function extractFileIdFromUrl(url) {
-//   if (!url) return null;
-//   const fileId = url.split("/").pop();
-//   return fileId;
-// }
+  try {
+    let body = await req.json();
+    const { id } = body;
 
-// export const DELETE = async (req) => {
-//   const session = await getServerSession(authOptions);
+    if (!id) {
+      return NextResponse.json({
+        message: "il manque de la donnée",
+        status: 400,
+      });
+    }
 
-//   if (!session) {
-//     return NextResponse.json({
-//       message: "vous n'êtes pas connecté",
-//       status: 401,
-//     });
-//   }
+    const episodeFounded = await prisma.episode.findUnique({
+      where: { id: id },
+    });
 
-//   if (session?.user.isAdmin === false) {
-//     return NextResponse.json({
-//       message: "vous n'êtes pas autorisé",
-//       status: 401,
-//     });
-//   }
+    if (!episodeFounded) {
+      return NextResponse.json({ error: "no episode found", status: 400 });
+    }
 
-//   const checkIfUserIsAdmin = await prisma.user.findUnique({
-//     where: { id: session.user.id },
-//     select: { isAdmin: true },
-//   });
+    // Vérifier si au moins un des deux fichiers existe
+    if (!episodeFounded.url) {
+      return NextResponse.json({
+        message: "aucun url trouvés",
+        status: 404,
+      });
+    }
+    // Récupération des fileIds et suppression des fichiers
+    const filesToDelete = [];
 
-//   if (!checkIfUserIsAdmin) {
-//     return NextResponse.json({ error: "No user found", status: 404 });
-//   }
+    if (episodeFounded?.url) {
+      const fileUrl = extractFileIdFromUrl(episodeFounded.url);
+      if (fileUrl) filesToDelete.push(fileUrl);
+    }
 
-//   if (checkIfUserIsAdmin?.isAdmin === false) {
-//     return NextResponse.json({
-//       message: "vous n'avez pas les droits",
-//       status: 401,
-//     });
-//   }
+    // Suppression des fichiers sur Pinata
+    if (filesToDelete.length > 0) {
+      try {
+        console.log("Recherche des fichiers à supprimer:", filesToDelete);
 
-//   try {
-//     let body = await req.json();
-//     const { id } = body;
+        // Récupérer la liste des fichiers
+        const fileList = await pinata.files.public.list();
+        console.log("Liste des fichiers disponibles:", fileList);
 
-//     if (!id) {
-//       return NextResponse.json({
-//         message: "il manque de la donnée",
-//         status: 400,
-//       });
-//     }
+        // Trouver les IDs correspondant aux CIDs
+        const filesToDeleteWithIds = filesToDelete
+          .map((cid) => {
+            const file = fileList.files.find((f) => f.cid === cid);
+            if (file) {
+              console.log(`Fichier trouvé - CID: ${cid}, ID: ${file.id}`);
+              return file.id;
+            }
+            console.log(`Fichier non trouvé pour le CID: ${cid}`);
+            return null;
+          })
+          .filter((id) => id !== null);
 
-//     const episodeFounded = await prisma.episode.findUnique({
-//       where: { id: id },
-//     });
+        if (filesToDeleteWithIds.length > 0) {
+          console.log(
+            "Suppression des fichiers avec IDs:",
+            filesToDeleteWithIds
+          );
+          const deleteResult =
+            await pinata.files.public.delete(filesToDeleteWithIds);
+          console.log("Résultat suppression:", deleteResult);
+        } else {
+          console.log("Aucun fichier trouvé à supprimer");
+        }
+      } catch (pinataError) {
+        console.error("Erreur Pinata:", pinataError);
+        console.error("Détails:", pinataError.message);
+      }
+    }
 
-//     if (!episodeFounded) {
-//       return NextResponse.json({ error: "no episode found", status: 400 });
-//     }
+    // Suppression du film de la base de données
+    const deletedItem = await prisma.episode.delete({
+      where: { id },
+    });
 
-//     // Vérifier si au moins un des deux fichiers existe
-//     if (!episodeFounded?.photo && !episodeFounded.url) {
-//       return NextResponse.json({
-//         message: "aucune photo ni url trouvés",
-//         status: 404,
-//       });
-//     }
-//     // Récupération des fileIds et suppression des fichiers
-//     const filesToDelete = [];
+    revalidatePath("/");
 
-//     if (episodeFounded?.photo) {
-//       const filePhoto = extractFileIdFromUrl(episodeFounded.photo);
-//       if (filePhoto) filesToDelete.push(filePhoto);
-//     }
-
-//     if (episodeFounded?.url) {
-//       const fileUrl = extractFileIdFromUrl(episodeFounded.url);
-//       if (fileUrl) filesToDelete.push(fileUrl);
-//     }
-
-//     if (filesToDelete.length > 0) {
-//       const deleteResult = await utapi.deleteFiles(filesToDelete);
-//       console.log("Fichiers supprimés:", deleteResult);
-//     }
-
-//     // Suppression du film de la base de données
-//     const deletedItem = await prisma.episode.delete({
-//       where: { id },
-//     });
-
-//     revalidatePath("/");
-
-//     return NextResponse.json({
-//       status: 200,
-//       message: "episode deleted",
-//     });
-//   } catch (error) {
-//     console.error("Erreur lors de la suppression:", error);
-//     return NextResponse.json({ message: "deleted successfully", status: 500 });
-//   }
-// };
+    return NextResponse.json({
+      status: 200,
+      message: "episode deleted",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la suppression:", error);
+    return NextResponse.json({ message: "deleted successfully", status: 500 });
+  }
+};
