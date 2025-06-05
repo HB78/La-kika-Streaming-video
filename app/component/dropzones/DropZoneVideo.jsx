@@ -64,12 +64,9 @@ export function DropZoneVideo({ getInfo }) {
     try {
       // Create a new tus upload
       const upload = new tus.Upload(file, {
-        endpoint: "https://uploads.pinata.cloud/v3/files",
+        endpoint: "/api/file", // Utiliser notre proxy
         chunkSize: 50 * 1024 * 1024, // 50MB chunks (max autorisé par Pinata)
         retryDelays: [0, 3000, 5000, 10000, 20000],
-        headers: {
-          Authorization: `Bearer ${process.env.PINATA_JWT}`,
-        },
         metadata: {
           filename: file.name,
           filetype: file.type,
@@ -87,7 +84,10 @@ export function DropZoneVideo({ getInfo }) {
         onSuccess: async () => {
           try {
             // Récupérer le CID du fichier uploadé
-            const fileInfo = await pinata.files.public.list().name(file.name);
+            const fileInfo = await pinata.files.public.list({
+              name: file.name,
+              limit: 1,
+            });
 
             if (fileInfo && fileInfo.files.length > 0) {
               const cid = fileInfo.files[0].cid;
