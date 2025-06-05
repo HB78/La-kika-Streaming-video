@@ -62,19 +62,19 @@ export function DropZoneVideo({ getInfo }) {
     updateFileStatus(file.name, "uploading");
 
     try {
-      // Get the upload URL from our API
-      const urlRequest = await fetch("/api/url");
-      const urlResponse = await urlRequest.json();
+      // Get the TUS configuration from our API
+      const configResponse = await fetch("/api/file");
+      const config = await configResponse.json();
 
-      if (!urlResponse.url) {
-        throw new Error("No upload URL received from API");
+      if (!config.endpoint) {
+        throw new Error("No TUS endpoint received from API");
       }
 
       // Create a new tus upload
       const upload = new tus.Upload(file, {
-        endpoint: urlResponse.url,
-        chunkSize: 50 * 1024 * 1024, // 50MB chunk size (maximum allowed by Pinata)
-        retryDelays: [0, 3000, 5000, 10000, 20000],
+        endpoint: config.endpoint,
+        chunkSize: config.chunkSize,
+        retryDelays: config.retryDelays,
         metadata: {
           filename: file.name,
           filetype: file.type,
@@ -91,25 +91,20 @@ export function DropZoneVideo({ getInfo }) {
         },
         onSuccess: async () => {
           try {
-            // After successful upload, we need to get the CID
-            const response = await fetch("/api/files");
-            const filesList = await response.json();
+            // Cette requête à /api/url n'est pas nécessaire ici car :
+            // 1. /api/url est utilisé pour les petits fichiers (< 100MB)
+            // 2. Pour les gros fichiers, on utilise TUS qui a déjà son propre endpoint
+            // 3. Le fichier est déjà uploadé à ce stade, on a juste besoin de récupérer son CID
+            const fileInfo = await pinata.files.public.list().name(file.name);
 
-            if (filesList && filesList.length > 0) {
-              // Find the most recent upload matching the filename
-              const fileInfo = filesList.find(
-                (uploadedFile) => uploadedFile.name === file.name
-              );
-              if (!fileInfo?.cid) {
-                throw new Error("No CID found for uploaded file");
-              }
-              const url = await pinata.gateways.public.convert(fileInfo.cid);
+            if (fileInfo && fileInfo.files.length > 0) {
+              const cid = fileInfo.files[0].cid;
+              const url = await pinata.gateways.public.convert(cid);
               await getInfo(url);
               console.log("url:", url);
-              console.log("url: ----> film", url);
 
               setUrls((prevUrls) => [...prevUrls, url]);
-              updateFileStatus(file.name, "completed", fileInfo.cid);
+              updateFileStatus(file.name, "completed", cid);
               toast.success(`File ${file.name} uploaded successfully!`);
             } else {
               throw new Error("Could not find uploaded file info");
