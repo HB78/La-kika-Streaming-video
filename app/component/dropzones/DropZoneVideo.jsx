@@ -7,7 +7,7 @@ import { VideoIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import * as tus from "tus-js-client";
+import tus from "tus-js-client";
 
 export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
@@ -64,34 +64,24 @@ export function DropZoneVideo({ getInfo }) {
     try {
       // Create a new tus upload
       const upload = new tus.Upload(file, {
-        endpoint: "https://uploads.pinata.cloud/v3/files",
+        endpoint: "/api/file", // Utiliser notre proxy
         chunkSize: 50 * 1024 * 1024, // 50MB chunks (max autorisé par Pinata)
         retryDelays: [0, 3000, 5000, 10000, 20000],
-        onUploadUrlAvailable: async function () {
-          if (upload.url) {
-            console.log("Upload URL is available! URL: ", upload.url);
-          }
-        },
         metadata: {
           filename: file.name,
           filetype: file.type,
           network: "public",
-          keyvalues: JSON.stringify({ env: "prod" }),
         },
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
-        },
-        uploadSize: file.size,
-        onError: function (error) {
+        onError: (error) => {
           console.error(`Upload failed: ${error}`);
           updateFileStatus(file.name, "error");
           toast.error(`Upload failed for ${file.name}`);
         },
-        onProgress: function (bytesUploaded, bytesTotal) {
+        onProgress: (bytesUploaded, bytesTotal) => {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
           updateFileProgress(file.name, percentage);
         },
-        onSuccess: async function () {
+        onSuccess: async () => {
           try {
             // Récupérer le CID du fichier uploadé
             const fileInfo = await pinata.files.public.list({
