@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const allow_origin_lists = [
   "https://lakika.vercel.app",
   "http://localhost:3000",
-  "https://uploads.pinata.cloud/v3/files",
+  "https://uploads.pinata.cloud",
 ];
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -37,7 +37,7 @@ function appendCorsHeaders(headers, origin) {
   headers.append("Access-Control-Allow-Origin", origin);
   headers.append(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTION"
+    "GET, POST, PUT, DELETE, OPTIONS"
   );
   headers.append(
     "Access-Control-Allow-Headers",
