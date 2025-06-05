@@ -7,7 +7,6 @@ import { VideoIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import * as tus from "tus-js-client";
 
 export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
@@ -58,73 +57,78 @@ export function DropZoneVideo({ getInfo }) {
 
   // Function to handle large file uploads using TUS (resumable uploads)
   const uploadLargeFile = async (file) => {
-    // Update file status
     updateFileStatus(file.name, "uploading");
 
     try {
-      // Get the TUS configuration from our API
-      const configResponse = await fetch("/api/file");
-      const config = await configResponse.json();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append(
+        "metadata",
+        JSON.stringify({
+          name: file.name,
+          keyvalues: {
+            uploadedAt: new Date().toISOString(),
+            originalSize: file.size,
+            type: file.type,
+          },
+        })
+      );
 
-      if (!config.endpoint) {
-        throw new Error("No TUS endpoint received from API");
-      }
-
-      // Create a new tus upload
-      const upload = new tus.Upload(file, {
-        endpoint: config.endpoint,
-        chunkSize: config.chunkSize,
-        retryDelays: config.retryDelays,
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-          network: "public",
-        },
-        onError: (error) => {
-          console.error(`Upload failed: ${error}`);
-          updateFileStatus(file.name, "error");
-          toast.error(`Upload failed for ${file.name}`);
-        },
-        onProgress: (bytesUploaded, bytesTotal) => {
-          const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
-          updateFileProgress(file.name, percentage);
-        },
-        onSuccess: async () => {
-          try {
-            // Cette requête à /api/url n'est pas nécessaire ici car :
-            // 1. /api/url est utilisé pour les petits fichiers (< 100MB)
-            // 2. Pour les gros fichiers, on utilise TUS qui a déjà son propre endpoint
-            // 3. Le fichier est déjà uploadé à ce stade, on a juste besoin de récupérer son CID
-            const fileInfo = await pinata.files.public.list().name(file.name);
-
-            if (fileInfo && fileInfo.files.length > 0) {
-              const cid = fileInfo.files[0].cid;
-              const url = await pinata.gateways.public.convert(cid);
-              await getInfo(url);
-              console.log("url:", url);
-
-              setUrls((prevUrls) => [...prevUrls, url]);
-              updateFileStatus(file.name, "completed", cid);
-              toast.success(`File ${file.name} uploaded successfully!`);
-            } else {
-              throw new Error("Could not find uploaded file info");
-            }
-          } catch (error) {
-            console.error("Error getting CID after upload:", error);
-            updateFileStatus(file.name, "error");
-            toast.error(
-              `Upload completed but couldn't get file details for ${file.name}`
-            );
-          }
-        },
+      // Fetch avec streaming de la réponse
+      const response = await fetch("/api/upload-large", {
+        method: "POST",
+        body: formData,
       });
 
-      // Start the upload
-      upload.start();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // Lire le stream de progression
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { value, done } = await reader.read();
+
+        if (done) break;
+
+        // Décoder le chunk reçu
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              switch (data.type) {
+                case "progress":
+                  updateFileProgress(file.name, data.progress);
+                  break;
+
+                case "complete":
+                  const url = await pinata.gateways.public.convert(data.cid);
+                  await getInfo(url);
+
+                  setUrls((prevUrls) => [...prevUrls, url]);
+                  updateFileStatus(file.name, "completed", data.cid);
+                  toast.success(`File ${file.name} uploaded successfully!`);
+                  return; // Sortir de la fonction
+
+                case "error":
+                  throw new Error(data.details || "Upload failed");
+              }
+            } catch (parseError) {
+              console.warn("Couldn't parse streaming data:", parseError);
+            }
+          }
+        }
+      }
     } catch (e) {
-      console.error("Upload setup error:", e);
+      console.error("Upload error:", e);
       updateFileStatus(file.name, "error");
-      toast.error(`Trouble setting up upload for ${file.name}`);
+      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
     }
   };
 
