@@ -57,28 +57,26 @@ export function DropZoneVideo({ getInfo }) {
 
   // Function to handle large file uploads using TUS (resumable uploads)
   const uploadLargeFile = async (file) => {
-    // Update file status
-    updateFileStatus(file.name, "uploading");
-
     try {
-      // Le SDK Pinata gère automatiquement la méthode d'upload
-      const upload = await pinata.upload.public.file(file);
+      // Update file status
+      updateFileStatus(file.name, "uploading");
 
-      if (upload?.cid) {
-        const url = await pinata.gateways.public.convert(upload.cid);
-        await getInfo(url);
-        console.log("url:", url);
+      const urlRequest = await fetch("/api/url");
+      const urlResponse = await urlRequest.json();
+      const upload = await pinata.upload.public.file(file).url(urlResponse.url);
 
-        setUrls((prevUrls) => [...prevUrls, url]);
-        updateFileStatus(file.name, "completed", upload.cid);
-        toast.success(`File ${file.name} uploaded successfully!`);
-      } else {
-        throw new Error("Upload completed but no CID received");
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
+      const url = await pinata.gateways.public.convert(upload.cid);
+      console.log("url:--> PETIT FILM", url);
+      await getInfo(url);
+
+      // Update states after successful upload
+      setUrls((prevUrls) => [...prevUrls, url]);
+      updateFileStatus(file.name, "completed", upload.cid);
+      toast.success(`File ${file.name} uploaded successfully!`);
+    } catch (e) {
+      console.error("Upload error:", e);
       updateFileStatus(file.name, "error");
-      toast.error(`Upload failed for ${file.name}`);
+      toast.error(`Trouble uploading file ${file.name}`);
     }
   };
 
