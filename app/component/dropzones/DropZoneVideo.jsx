@@ -68,7 +68,7 @@ export function DropZoneVideo({ getInfo }) {
         chunkSize: 50 * 1024 * 1024, // 50MB chunks (max autorisé par Pinata)
         retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+          Authorization: `Bearer ${process.env.PINATA_JWT}`,
         },
         onUploadUrlAvailable: async function () {
           if (upload.url) {
