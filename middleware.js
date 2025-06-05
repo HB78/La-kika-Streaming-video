@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 const allow_origin_lists = [
   "https://lakika.vercel.app",
   "http://localhost:3000",
+  "https://uploads.pinata.cloud/v3/files",
 ];
 
 const isDevelopment = process.env.NODE_ENV === "development";
