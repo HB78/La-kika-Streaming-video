@@ -62,21 +62,13 @@ export function DropZoneVideo({ getInfo }) {
     updateFileStatus(file.name, "uploading");
 
     try {
-      // Get the TUS configuration from our API
-      const configResponse = await fetch("/api/file");
-      const config = await configResponse.json();
-
-      if (!config.endpoint) {
-        throw new Error("No TUS endpoint received from API");
-      }
-
       // Create a new tus upload
       const upload = new tus.Upload(file, {
-        endpoint: config.endpoint,
-        chunkSize: config.chunkSize,
-        retryDelays: config.retryDelays,
+        endpoint: "https://uploads.pinata.cloud/v3/files",
+        chunkSize: 50 * 1024 * 1024, // 50MB chunks (max autorisé par Pinata)
+        retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
-          Authorization: `Bearer ${config.jwt}`,
+          Authorization: `Bearer ${process.env.PINATA_JWT}`,
         },
         metadata: {
           filename: file.name,
