@@ -7,7 +7,7 @@ import { VideoIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import tus from "tus-js-client";
+import * as tus from "tus-js-client";
 
 export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
