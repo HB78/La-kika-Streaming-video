@@ -58,51 +58,71 @@ export function DropZoneVideo({ getInfo }) {
 
   // Function to handle large file uploads using TUS (resumable uploads)
   const uploadLargeFile = async (file) => {
+    // Update file status
     updateFileStatus(file.name, "uploading");
 
     try {
+      // Get the TUS configuration from our API
+      const configResponse = await fetch("/api/file");
+      const config = await configResponse.json();
+
+      if (!config.endpoint) {
+        throw new Error("No TUS endpoint received from API");
+      }
+
+      // Create a new tus upload
       const upload = new tus.Upload(file, {
-        endpoint: "/api/upload-large", // ← TON proxy, pas Pinata direct
-        chunkSize: 50 * 1024 * 1024,
-        retryDelays: [0, 3000, 5000, 10000, 20000],
+        endpoint: config.endpoint,
+        chunkSize: config.chunkSize,
+        retryDelays: config.retryDelays,
+        headers: {
+          Authorization: `Bearer ${config.jwt}`,
+        },
         metadata: {
           filename: file.name,
           filetype: file.type,
           network: "public",
         },
-        onError: function (error) {
-          console.error(`TUS Upload failed: ${error}`);
+        onError: (error) => {
+          console.error(`Upload failed: ${error}`);
           updateFileStatus(file.name, "error");
           toast.error(`Upload failed for ${file.name}`);
         },
-        onProgress: function (bytesUploaded, bytesTotal) {
+        onProgress: (bytesUploaded, bytesTotal) => {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
           updateFileProgress(file.name, percentage);
         },
-        onSuccess: async function () {
+        onSuccess: async () => {
           try {
-            const response = await fetch("/api/files");
-            const filesList = await response.json();
-            const fileInfo = filesList.find((f) => f.name === file.name);
+            // Récupérer le CID du fichier uploadé
+            const fileInfo = await pinata.files.public.list().name(file.name);
 
-            if (fileInfo?.cid) {
-              const url = await pinata.gateways.public.convert(fileInfo.cid);
+            if (fileInfo && fileInfo.files.length > 0) {
+              const cid = fileInfo.files[0].cid;
+              const url = await pinata.gateways.public.convert(cid);
               await getInfo(url);
+              console.log("url:", url);
 
               setUrls((prevUrls) => [...prevUrls, url]);
-              updateFileStatus(file.name, "completed", fileInfo.cid);
+              updateFileStatus(file.name, "completed", cid);
               toast.success(`File ${file.name} uploaded successfully!`);
+            } else {
+              throw new Error("Could not find uploaded file info");
             }
           } catch (error) {
-            console.error("Error getting file info:", error);
+            console.error("Error getting CID after upload:", error);
             updateFileStatus(file.name, "error");
+            toast.error(
+              `Upload completed but couldn't get file details for ${file.name}`
+            );
           }
         },
       });
 
+      // Start the upload
       upload.start();
     } catch (e) {
-      console.error("TUS setup error:", e);
+      console.error("Upload setup error:", e);
       updateFileStatus(file.name, "error");
       toast.error(`Trouble setting up upload for ${file.name}`);
     }
