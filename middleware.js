@@ -4,6 +4,9 @@ const allow_origin_lists = [
   "https://lakika.vercel.app",
   "http://localhost:3000",
   "https://uploads.pinata.cloud",
+  "https://gateway.pinata.cloud",
+  "https://uploads.pinata.cloud/v3/files",
+  "https://uploads.pinata.cloud/v3",
 ];
 
 const isDevelopment = process.env.NODE_ENV === "development";
