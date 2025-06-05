@@ -62,6 +62,10 @@ export function DropZoneVideo({ getInfo }) {
     updateFileStatus(file.name, "uploading");
 
     try {
+      console.log("Starting upload for file:", file.name);
+      console.log("File size:", file.size);
+      console.log("File type:", file.type);
+
       // Create a new tus upload
       const upload = new tus.Upload(file, {
         endpoint: "https://uploads.pinata.cloud/v3/files",
@@ -84,14 +88,18 @@ export function DropZoneVideo({ getInfo }) {
         uploadSize: file.size,
         onError: function (error) {
           console.error(`Upload failed: ${error}`);
+          console.error("Error details:", error.message);
+          console.error("Error stack:", error.stack);
           updateFileStatus(file.name, "error");
           toast.error(`Upload failed for ${file.name}`);
         },
         onProgress: function (bytesUploaded, bytesTotal) {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
+          console.log(`Upload progress: ${percentage}%`);
           updateFileProgress(file.name, percentage);
         },
         onSuccess: async function () {
+          console.log("Upload completed successfully!");
           try {
             // Récupérer le CID du fichier uploadé
             const fileInfo = await pinata.files.public.list({
@@ -103,7 +111,7 @@ export function DropZoneVideo({ getInfo }) {
               const cid = fileInfo.files[0].cid;
               const url = await pinata.gateways.public.convert(cid);
               await getInfo(url);
-              console.log("url:", url);
+              console.log("File URL:", url);
 
               setUrls((prevUrls) => [...prevUrls, url]);
               updateFileStatus(file.name, "completed", cid);
@@ -113,6 +121,8 @@ export function DropZoneVideo({ getInfo }) {
             }
           } catch (error) {
             console.error("Error getting CID after upload:", error);
+            console.error("Error details:", error.message);
+            console.error("Error stack:", error.stack);
             updateFileStatus(file.name, "error");
             toast.error(
               `Upload completed but couldn't get file details for ${file.name}`
@@ -122,9 +132,12 @@ export function DropZoneVideo({ getInfo }) {
       });
 
       // Start the upload
+      console.log("Starting upload process...");
       upload.start();
     } catch (e) {
       console.error("Upload setup error:", e);
+      console.error("Error details:", e.message);
+      console.error("Error stack:", e.stack);
       updateFileStatus(file.name, "error");
       toast.error(`Trouble setting up upload for ${file.name}`);
     }
