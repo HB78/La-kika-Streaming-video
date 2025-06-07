@@ -74,7 +74,7 @@ export function DropZoneVideo({ getInfo }) {
 
     try {
       const upload = new tus.Upload(file, {
-        endpoint: "https://uploads.pinata.cloud/v3/files",
+        endpoint: "/api/file",
         chunkSize: FILE_SIZE_LIMITS.CHUNK_SIZE,
         retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
@@ -96,6 +96,9 @@ export function DropZoneVideo({ getInfo }) {
         },
         onSuccess: async () => {
           try {
+            // Add a small delay to allow Pinata to index the file
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
             const fileInfo = await pinata.files.public.list({
               name: file.name,
               limit: 1,
