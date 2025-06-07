@@ -7,39 +7,8 @@ const allow_origin_lists = [
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
-export function middleware(request) {
-  // Handle CORS for Pinata uploads
-  if (request.nextUrl.pathname.startsWith("/api/file")) {
-    const response = NextResponse.next();
-
-    // Add CORS headers
-    response.headers.set("Access-Control-Allow-Origin", "*");
-    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD");
-    response.headers.set(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization, Upload-Length, Upload-Metadata, Tus-Resumable"
-    );
-    response.headers.set("Tus-Resumable", "1.0.0");
-
-    // Handle preflight requests
-    if (request.method === "OPTIONS") {
-      return new NextResponse(null, {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS, HEAD",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Authorization, Upload-Length, Upload-Metadata, Tus-Resumable",
-          "Tus-Resumable": "1.0.0",
-          "Access-Control-Max-Age": "86400",
-        },
-      });
-    }
-
-    return response;
-  }
-
-  const origin = request.headers.get("origin");
+export const middleware = async (req) => {
+  const origin = req.headers.get("origin");
 
   if (origin && !allow_origin_lists.includes(origin)) {
     return new NextResponse(null, {
@@ -60,7 +29,7 @@ export function middleware(request) {
   appendCspHeaders(res.headers);
 
   return res;
-}
+};
 
 function appendCorsHeaders(headers, origin) {
   headers.append("Access-Control-Allow-Credentials", "true");
@@ -96,5 +65,5 @@ function appendCspHeaders(headers) {
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/api/file/:path*"],
+  matcher: ["/api/:path*"],
 };
