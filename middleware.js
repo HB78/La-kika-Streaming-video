@@ -51,18 +51,19 @@ function appendCspHeaders(headers) {
       "style-src 'self' 'unsafe-inline'; " +
       "img-src 'self' data: https:; " +
       "font-src 'self'; " +
-      "connect-src 'self' https: https://uploads.pinata.cloud; " + // ✅ Ajoutez Pinata
+      "connect-src 'self' https:; " +
       "frame-src 'self';"
     : "default-src 'self'; " +
       "script-src 'self' https://lakika.vercel.app; " +
       "style-src 'self' https://lakika.vercel.app; " +
       "img-src 'self' data: https:; " +
       "font-src 'self' https://lakika.vercel.app; " +
-      "connect-src 'self' https: https://uploads.pinata.cloud; " + // ✅ Ajoutez Pinata
+      "connect-src 'self' https:; " +
       "frame-src 'self';";
 
   headers.set("Content-Security-Policy", policy);
 }
+
 export const config = {
   matcher: ["/api/:path*"],
 };
