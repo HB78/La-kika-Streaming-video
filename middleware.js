@@ -33,15 +33,21 @@ export const middleware = async (req) => {
 
 function appendCorsHeaders(headers, origin) {
   headers.append("Access-Control-Allow-Credentials", "true");
-  headers.append("Access-Control-Allow-Origin", origin);
+  headers.append("Access-Control-Allow-Origin", origin || "*");
   headers.append(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD" // ✅ Ajout de PATCH et HEAD pour TUS
   );
   headers.append(
     "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version"
+    "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version, " +
+      "Upload-Offset, Upload-Length, Tus-Resumable, Upload-Metadata, Authorization" // ✅ Headers TUS
   );
+
+  // ✅ Headers TUS spécifiques
+  headers.append("Tus-Resumable", "1.0.0");
+  headers.append("Tus-Version", "1.0.0");
+  headers.append("Tus-Max-Size", "1073741824"); // 1GB
 }
 
 function appendCspHeaders(headers) {

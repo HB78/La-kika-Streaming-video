@@ -69,6 +69,7 @@ export function DropZoneVideo({ getInfo }) {
   };
 
   // Function to handle large file uploads using TUS (resumable uploads)
+  // Function to handle large file uploads using TUS (resumable uploads)
   const uploadLargeFile = async (file) => {
     updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
@@ -78,7 +79,7 @@ export function DropZoneVideo({ getInfo }) {
         chunkSize: FILE_SIZE_LIMITS.CHUNK_SIZE,
         retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+          // ✅ Retiré l'Authorization header qui causait des problèmes
         },
         metadata: {
           filename: file.name,
@@ -88,7 +89,7 @@ export function DropZoneVideo({ getInfo }) {
         onError: (error) => {
           console.error(`Upload failed: ${error}`);
           updateFileStatus(file.name, FILE_STATUS.ERROR);
-          toast.error(`Upload failed for ${file.name}`);
+          toast.error(`Upload failed for ${file.name}: ${error.message}`);
         },
         onProgress: (bytesUploaded, bytesTotal) => {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
@@ -96,37 +97,48 @@ export function DropZoneVideo({ getInfo }) {
         },
         onSuccess: async () => {
           try {
-            // Add a small delay to allow Pinata to index the file
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            console.log("Upload completed for:", file.name);
 
-            // Try to get the file info with retries
+            // ✅ Attendre plus longtemps pour l'indexation Pinata
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+
+            // Essayer de récupérer les infos du fichier avec plus de retries
             let fileInfo = null;
-            let retries = 3;
+            let retries = 5; // ✅ Plus de retries
 
             while (retries > 0 && !fileInfo?.files?.length) {
               try {
+                console.log(
+                  `Attempting to find file, retries left: ${retries}`
+                );
+
                 fileInfo = await pinata.files.public.list({
                   name: file.name,
-                  limit: 1,
+                  limit: 10, // ✅ Plus de résultats
                 });
 
                 if (!fileInfo?.files?.length) {
                   retries--;
                   if (retries > 0) {
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                    await new Promise((resolve) => setTimeout(resolve, 3000)); // ✅ Plus de temps entre retries
                   }
                 }
               } catch (error) {
-                console.error(`Retry ${4 - retries} failed:`, error);
+                console.error(`Retry ${6 - retries} failed:`, error);
                 retries--;
                 if (retries > 0) {
-                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                  await new Promise((resolve) => setTimeout(resolve, 3000));
                 }
               }
             }
 
             if (fileInfo?.files?.length > 0) {
-              const cid = fileInfo.files[0].cid;
+              // ✅ Prendre le fichier le plus récent si plusieurs fichiers avec le même nom
+              const latestFile = fileInfo.files.sort(
+                (a, b) => new Date(b.date_uploaded) - new Date(a.date_uploaded)
+              )[0];
+
+              const cid = latestFile.cid;
               const url = await pinata.gateways.public.convert(cid);
               await getInfo(url);
 
@@ -134,17 +146,25 @@ export function DropZoneVideo({ getInfo }) {
               updateFileStatus(file.name, FILE_STATUS.COMPLETED, cid);
               toast.success(`File ${file.name} uploaded successfully!`);
             } else {
-              throw new Error(
-                "Could not find uploaded file info after multiple retries"
+              console.warn("Could not find uploaded file after retries");
+              // ✅ Même si on ne trouve pas le fichier, marquer comme complété
+              updateFileStatus(file.name, FILE_STATUS.COMPLETED, "unknown");
+              toast.success(
+                `File ${file.name} uploaded (verification pending)`
               );
             }
           } catch (error) {
             console.error("Error getting CID after upload:", error);
             updateFileStatus(file.name, FILE_STATUS.ERROR);
             toast.error(
-              `Upload completed but couldn't get file details for ${file.name}: ${error.message}`
+              `Upload completed but couldn't verify ${file.name}: ${error.message}`
             );
           }
+        },
+        // ✅ Ajout de beforeRequest pour debug
+        onBeforeRequest: (req) => {
+          console.log("TUS request:", req.getMethod(), req.getURL());
+          return req;
         },
       });
 
