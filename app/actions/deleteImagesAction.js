@@ -2,18 +2,23 @@
 
 import { pinata } from "@/app/utils/config";
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const deleteImagesAction = async (fileId) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new NextResponse("vous n'êtes pas connecté", { status: 401 });
+    return {
+      success: false,
+      message: "Vous n'êtes pas connecté",
+    };
   }
 
   if (session.user?.isAdmin === false) {
-    return new NextResponse("vous n'êtes pas autorisé", { status: 401 });
+    return {
+      success: false,
+      message: "Vous n'êtes pas autorisé",
+    };
   }
 
   if (!fileId || fileId.trim() === "") {
