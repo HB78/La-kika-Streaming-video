@@ -1,10 +1,9 @@
-// app/api/upload-direct/route.js
 import { pinata } from "@/app/utils/config";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
-  console.log("=== API /api/upload-direct POST ===");
+// export const bodyParser = false;
 
+export async function POST(request) {
   try {
     const data = await request.formData();
     const file = data.get("file");
@@ -14,37 +13,29 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    console.log(`Direct upload: ${file.name}, size: ${file.size} bytes`);
-
-    let uploadData;
+    // Handle TUS upload (large files)
+    //Si il y a des metadata, c'est un gros fichier
     if (metadata) {
       const metadataObj = JSON.parse(metadata);
-      uploadData = await pinata.upload.public.file(file, {
+      const uploadData = await pinata.upload.public.file(file, {
         pinataMetadata: {
           name: metadataObj.filename,
           keyvalues: {
             filetype: metadataObj.filetype,
-            network: metadataObj.network || "public",
+            network: metadataObj.network,
           },
         },
       });
-    } else {
-      uploadData = await pinata.upload.public.file(file, {
-        pinataMetadata: {
-          name: file.name,
-        },
-      });
+      return NextResponse.json(uploadData, { status: 200 });
     }
 
-    console.log("Direct upload success:", uploadData);
+    // Handle regular upload (small files)
+    const uploadData = await pinata.upload.public.file(file);
     return NextResponse.json(uploadData, { status: 200 });
-  } catch (error) {
-    console.error("Direct upload error:", error);
+  } catch (e) {
+    console.error("Upload error:", e);
     return NextResponse.json(
-      {
-        error: "Upload failed",
-        details: error.message,
-      },
+      { error: "Internal Server Error", details: e.message },
       { status: 500 }
     );
   }

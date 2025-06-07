@@ -76,22 +76,28 @@ export function DropZoneVideo({ getInfo }) {
       console.log(`Starting TUS upload for: ${file.name} (${file.size} bytes)`);
 
       const upload = new tus.Upload(file, {
-        endpoint: "/api/file",
-        chunkSize: FILE_SIZE_LIMITS.CHUNK_SIZE,
-        retryDelays: [1000, 3000, 5000], // ✅ Moins de retries pour éviter la boucle infinie
+        // ✅ ENDPOINT PINATA OFFICIEL pour TUS
+        endpoint: "https://uploads.pinata.cloud/v3/files",
+        chunkSize: 50 * 1024 * 1024, // 50MB comme dans la doc
+        retryDelays: [0, 3000, 5000, 10000, 20000],
         headers: {
-          // Pas d'Authorization header
+          // ✅ OBLIGATOIRE : Authorization avec votre JWT Pinata
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
         },
         metadata: {
           filename: file.name,
           filetype: file.type,
           network: "public",
+          // ✅ keyvalues en JSON string comme dans la doc
+          keyvalues: JSON.stringify({
+            uploadType: "large",
+            source: "dropzone",
+          }),
         },
         onError: (error) => {
-          console.error(`Upload failed for ${file.name}:`, error);
+          console.error(`TUS Upload failed for ${file.name}:`, error);
           updateFileStatus(file.name, FILE_STATUS.ERROR);
-          toast.error(`Upload failed for ${file.name}`);
-          // ✅ Pas de retry automatique, on s'arrête ici
+          toast.error(`Upload failed for ${file.name}: ${error.message}`);
         },
         onProgress: (bytesUploaded, bytesTotal) => {
           const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
@@ -99,73 +105,74 @@ export function DropZoneVideo({ getInfo }) {
           updateFileProgress(file.name, percentage);
         },
         onSuccess: async () => {
-          console.log(`Upload completed for: ${file.name}`);
+          console.log(`TUS Upload completed for: ${file.name}`);
 
           try {
-            // ✅ Approche simplifiée - pas de recherche par nom
-            // On utilise un upload direct avec Pinata à la place
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append(
-              "metadata",
-              JSON.stringify({
-                filename: file.name,
-                filetype: file.type,
-                network: "public",
-              })
-            );
+            // ✅ Attendre que Pinata indexe le fichier
+            await new Promise((resolve) => setTimeout(resolve, 3000));
 
-            // Upload direct via notre API FormData
-            const response = await fetch("/api/upload-direct", {
-              method: "POST",
-              body: formData,
-            });
+            // ✅ Chercher le fichier uploadé dans Pinata
+            let retries = 5;
+            let fileInfo = null;
 
-            if (response.ok) {
-              const result = await response.json();
-              const url = await pinata.gateways.public.convert(result.cid);
+            while (retries > 0 && !fileInfo?.files?.length) {
+              try {
+                fileInfo = await pinata.files.public.list({
+                  name: file.name,
+                  limit: 10,
+                });
+
+                if (fileInfo?.files?.length > 0) {
+                  break;
+                }
+
+                retries--;
+                if (retries > 0) {
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                }
+              } catch (error) {
+                console.error(`Retry ${6 - retries} failed:`, error);
+                retries--;
+                if (retries > 0) {
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                }
+              }
+            }
+
+            if (fileInfo?.files?.length > 0) {
+              const latestFile = fileInfo.files.sort(
+                (a, b) => new Date(b.date_uploaded) - new Date(a.date_uploaded)
+              )[0];
+
+              const cid = latestFile.cid;
+              const url = await pinata.gateways.public.convert(cid);
               await getInfo(url);
 
               setUrls((prevUrls) => [...prevUrls, url]);
-              updateFileStatus(file.name, FILE_STATUS.COMPLETED, result.cid);
+              updateFileStatus(file.name, FILE_STATUS.COMPLETED, cid);
               toast.success(`File ${file.name} uploaded successfully!`);
             } else {
-              throw new Error(`Upload verification failed: ${response.status}`);
+              // ✅ Même si on ne trouve pas, marquer comme complété
+              updateFileStatus(file.name, FILE_STATUS.COMPLETED, "tus-upload");
+              toast.success(`File ${file.name} uploaded via TUS!`);
             }
           } catch (error) {
             console.error("Error after TUS upload:", error);
-            // ✅ Même en cas d'erreur de vérification, on marque comme complété
             updateFileStatus(file.name, FILE_STATUS.COMPLETED, "tus-upload");
-            toast.success(`File ${file.name} uploaded (TUS method)`);
+            toast.success(`File ${file.name} uploaded (verification pending)`);
           }
         },
         onBeforeRequest: (req) => {
-          const method = req.getMethod();
-          const url = req.getURL();
-          console.log(`TUS request: ${method} ${url}`);
-
-          // ✅ Ajouter des headers CORS si nécessaire
-          req.setHeader("Access-Control-Request-Method", method);
+          console.log(`TUS request: ${req.getMethod()} ${req.getURL()}`);
           return req;
         },
       });
 
-      // ✅ Gestion d'erreur globale pour éviter les crashes
       upload.start();
-
-      // ✅ Timeout de sécurité pour éviter les uploads qui traînent
-      setTimeout(() => {
-        if (upload.isRunning) {
-          console.log(`Upload timeout for ${file.name}, aborting...`);
-          upload.abort();
-          updateFileStatus(file.name, FILE_STATUS.ERROR);
-          toast.error(`Upload timeout for ${file.name}`);
-        }
-      }, 300000); // 5 minutes max
     } catch (e) {
-      console.error("Upload setup error:", e);
+      console.error("TUS setup error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Failed to start upload for ${file.name}`);
+      toast.error(`Failed to start TUS upload for ${file.name}: ${e.message}`);
     }
   };
 
@@ -197,13 +204,7 @@ export function DropZoneVideo({ getInfo }) {
   const uploadFile = async (file) => {
     startTransition(async () => {
       if (file.size > FILE_SIZE_LIMITS.SMALL) {
-        // ✅ Essayer TUS d'abord, puis fallback vers direct
-        try {
-          await uploadLargeFile(file);
-        } catch (error) {
-          console.log("TUS failed, trying direct upload...");
-          await uploadLargeFileDirectly(file);
-        }
+        await uploadLargeFile(file);
       } else {
         await uploadSmallFile(file);
       }
