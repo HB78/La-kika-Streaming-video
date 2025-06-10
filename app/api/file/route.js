@@ -12,12 +12,6 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
 
-export const config = {
-  api: {
-    responseLimit: false,
-  },
-};
-
 export async function GET() {
   // If you're going to use auth you'll want to verify here
   try {
