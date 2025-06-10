@@ -183,11 +183,7 @@ export function DropZoneVideo({ getInfo }) {
   // Main upload function that decides which upload method to use based on file size
   const uploadFile = async (file) => {
     startTransition(async () => {
-      if (file.size > FILE_SIZE_LIMITS.SMALL) {
-        await uploadLargeFile(file);
-      } else {
-        await uploadSmallFile(file);
-      }
+      await uploadSmallFile(file);
     });
   };
 
