@@ -10,7 +10,7 @@ export async function POST(request) {
     const metadata = data.get("metadata");
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file provided" });
     }
 
     // Handle TUS upload (large files)
