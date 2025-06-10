@@ -8,10 +8,6 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// Configuration pour les gros fichiers
-export const runtime = "nodejs";
-export const maxDuration = 300; // 5 minutes
-
 export async function GET() {
   // If you're going to use auth you'll want to verify here
   try {

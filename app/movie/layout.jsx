@@ -3,8 +3,6 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Creation de films",
   description: "Page de création de films pour les administrateurs",
