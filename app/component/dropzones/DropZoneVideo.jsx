@@ -67,75 +67,26 @@ export function DropZoneVideo({ getInfo }) {
     }
   };
 
-  // Function to handle large file uploads
+  // Function to handle large file uploads using TUS (resumable uploads)
   const uploadLargeFile = async (file) => {
     updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
     try {
-      const fileSizeMB = file.size / 1024 / 1024;
-      console.log(
-        `Starting upload: ${file.name} (${fileSizeMB.toFixed(2)} MB)`
-      );
-
-      // Stratégie intelligente selon la taille
-      if (fileSizeMB <= 4) {
-        // Petits fichiers : Via serveur Next.js
-        await uploadViaServer(file);
-      } else {
-        // Gros fichiers : Client-side avec URL signée
-        await uploadViaClientSide(file);
-      }
+      setUploading(true);
+      const data = new FormData();
+      data.set("file", file);
+      const uploadRequest = await fetch("/api/files", {
+        method: "POST",
+        body: data,
+      });
+      const signedUrl = await uploadRequest.json();
+      setUrls(signedUrl);
+      setUploading(false);
     } catch (e) {
-      console.error("Upload error:", e);
-      updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
+      console.log(e);
+      setUploading(false);
+      alert("Trouble uploading file");
     }
-  };
-
-  // Method 1: Upload via serveur (< 4MB)
-  const uploadViaServer = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("/api/file", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.details || "Server upload failed");
-    }
-
-    const result = await response.json();
-    await getInfo(result.url);
-    setUrls((prevUrls) => [...prevUrls, result.url]);
-    updateFileStatus(file.name, FILE_STATUS.COMPLETED, result.cid);
-    toast.success(`File ${file.name} uploaded successfully!`);
-  };
-
-  // Method 2: Upload client-side avec URL signée (> 4MB)
-  const uploadViaClientSide = async (file) => {
-    // Étape 1: Récupérer URL signée
-    const urlRequest = await fetch("/api/file");
-    if (!urlRequest.ok) {
-      throw new Error("Failed to get signed URL");
-    }
-
-    const urlResponse = await urlRequest.json();
-
-    // Étape 2: Upload direct vers Pinata
-    const uploadResult = await pinata.upload.public
-      .file(file)
-      .url(urlResponse.url);
-
-    // Étape 3: Générer URL publique
-    const fileUrl = await pinata.gateways.public.convert(uploadResult.cid);
-    await getInfo(fileUrl);
-
-    setUrls((prevUrls) => [...prevUrls, fileUrl]);
-    updateFileStatus(file.name, FILE_STATUS.COMPLETED, uploadResult.cid);
-    toast.success(`File ${file.name} uploaded successfully!`);
   };
 
   // Helper function to update file status
@@ -165,7 +116,11 @@ export function DropZoneVideo({ getInfo }) {
   // Main upload function that decides which upload method to use based on file size
   const uploadFile = async (file) => {
     startTransition(async () => {
-      await uploadLargeFile(file);
+      if (file.size > FILE_SIZE_LIMITS.SMALL) {
+        await uploadLargeFile(file);
+      } else {
+        await uploadSmallFile(file);
+      }
     });
   };
 
