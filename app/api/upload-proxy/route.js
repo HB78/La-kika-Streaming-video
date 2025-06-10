@@ -1,5 +1,3 @@
-// app/api/upload-proxy/route.js
-// Cette API reçoit le fichier côté client et l'envoie à Pinata
 import { pinata } from "@/app/utils/config";
 import { NextResponse } from "next/server";
 
@@ -22,7 +20,7 @@ export async function POST(request) {
       `Proxying upload: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`
     );
 
-    // ✅ Upload direct à Pinata via le serveur (pas de CORS)
+    // Upload direct à Pinata via le serveur (pas de CORS)
     const uploadResult = await pinata.upload.public.file(file, {
       pinataMetadata: {
         name: file.name,
@@ -35,7 +33,7 @@ export async function POST(request) {
 
     console.log("Upload successful:", uploadResult.cid);
 
-    // ✅ Générer URL publique
+    // Générer URL publique
     const publicUrl = await pinata.gateways.public.convert(uploadResult.cid);
 
     return NextResponse.json({

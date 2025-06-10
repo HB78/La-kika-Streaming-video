@@ -72,49 +72,115 @@ export function DropZoneVideo({ getInfo }) {
     updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
     try {
-      // Get signed URL from our API
-      const signedUrlResponse = await fetch("/api/signed-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename: file.name,
-          filesize: file.size,
-        }),
-      });
+      const fileSizeMB = file.size / 1024 / 1024;
+      console.log(`Uploading: ${file.name} (${fileSizeMB.toFixed(2)} MB)`);
 
-      if (!signedUrlResponse.ok) {
-        throw new Error("Failed to get signed URL");
+      if (fileSizeMB > 50) {
+        // Gros fichiers : TUS direct vers Pinata
+        await uploadWithTUS(file);
+      } else {
+        // Petits/moyens fichiers : Via proxy serveur
+        await uploadViaProxy(file);
       }
-
-      const { signedUrl } = await signedUrlResponse.json();
-
-      // Upload directly to Pinata
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const uploadResponse = await fetch(signedUrl, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Upload to Pinata failed");
-      }
-
-      const uploadResult = await uploadResponse.json();
-
-      // Generate public URL
-      const url = `https://gateway.pinata.cloud/ipfs/${uploadResult.cid}`;
-      await getInfo(url);
-
-      setUrls((prevUrls) => [...prevUrls, url]);
-      updateFileStatus(file.name, FILE_STATUS.COMPLETED, uploadResult.cid);
-      toast.success(`File ${file.name} uploaded successfully!`);
     } catch (e) {
       console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
       toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
     }
+  };
+
+  // Method 1: Upload via proxy serveur (pas de limite CORS)
+  const uploadViaProxy = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload-proxy", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.details || "Proxy upload failed");
+    }
+
+    const result = await response.json();
+    await getInfo(result.url);
+    setUrls((prevUrls) => [...prevUrls, result.url]);
+    updateFileStatus(file.name, FILE_STATUS.COMPLETED, result.cid);
+    toast.success(`File ${file.name} uploaded successfully!`);
+  };
+
+  // Method 2: Upload TUS pour gros fichiers
+  const uploadWithTUS = async (file) => {
+    // Import dynamique pour éviter les erreurs SSR
+    const tus = await import("tus-js-client");
+
+    return new Promise((resolve, reject) => {
+      const upload = new tus.Upload(file, {
+        endpoint: "https://uploads.pinata.cloud/v3/files",
+        chunkSize: 50 * 1024 * 1024, // 50MB
+        retryDelays: [0, 3000, 5000],
+
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+        },
+
+        metadata: {
+          filename: file.name,
+          filetype: file.type,
+          network: "public",
+        },
+
+        onProgress: (bytesUploaded, bytesTotal) => {
+          const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
+          // Mettre à jour la progression si nécessaire
+        },
+
+        onError: (error) => {
+          console.error("TUS error:", error);
+          reject(error);
+        },
+
+        onSuccess: async () => {
+          console.log("TUS upload completed");
+
+          // Attendre indexation et récupérer infos
+          setTimeout(async () => {
+            try {
+              const files = await pinata.files.public.list({
+                name: file.name,
+                limit: 1,
+              });
+
+              if (files?.files?.length > 0) {
+                const uploadedFile = files.files[0];
+                const publicUrl = await pinata.gateways.public.convert(
+                  uploadedFile.cid
+                );
+
+                await getInfo(publicUrl);
+                setUrls((prevUrls) => [...prevUrls, publicUrl]);
+                updateFileStatus(
+                  file.name,
+                  FILE_STATUS.COMPLETED,
+                  uploadedFile.cid
+                );
+                toast.success(`File ${file.name} uploaded successfully!`);
+              } else {
+                throw new Error("File not found after upload");
+              }
+            } catch (error) {
+              throw new Error("Failed to verify upload: " + error.message);
+            }
+
+            resolve();
+          }, 5000);
+        },
+      });
+
+      upload.start();
+    });
   };
 
   // Helper function to update file status
