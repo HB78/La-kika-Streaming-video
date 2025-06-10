@@ -5,31 +5,38 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
+    const contentType = request.headers.get("content-type") || "";
+
+    // Handle TUS upload (large files)
+    if (contentType.includes("application/offset+octet-stream")) {
+      const file = await request.blob();
+      const metadata = request.headers.get("upload-metadata");
+
+      if (metadata) {
+        const metadataObj = JSON.parse(
+          Buffer.from(metadata, "base64").toString()
+        );
+        const uploadData = await pinata.upload.public.file(file, {
+          pinataMetadata: {
+            name: metadataObj.filename,
+            keyvalues: {
+              filetype: metadataObj.filetype,
+              network: metadataObj.network,
+            },
+          },
+        });
+        return NextResponse.json(uploadData, { status: 200 });
+      }
+    }
+
+    // Handle regular upload (small files)
     const data = await request.formData();
     const file = data.get("file");
-    const metadata = data.get("metadata");
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Handle TUS upload (large files)
-    //Si il y a des metadata, c'est un gros fichier
-    if (metadata) {
-      const metadataObj = JSON.parse(metadata);
-      const uploadData = await pinata.upload.public.file(file, {
-        pinataMetadata: {
-          name: metadataObj.filename,
-          keyvalues: {
-            filetype: metadataObj.filetype,
-            network: metadataObj.network,
-          },
-        },
-      });
-      return NextResponse.json(uploadData, { status: 200 });
-    }
-
-    // Handle regular upload (small files)
     const uploadData = await pinata.upload.public.file(file);
     return NextResponse.json(uploadData, { status: 200 });
   } catch (e) {

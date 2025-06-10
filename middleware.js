@@ -36,11 +36,15 @@ function appendCorsHeaders(headers, origin) {
   headers.append("Access-Control-Allow-Origin", origin);
   headers.append(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
   );
   headers.append(
     "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version"
+    "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version, Upload-Length, Upload-Metadata, Upload-Offset, Tus-Resumable"
+  );
+  headers.append(
+    "Access-Control-Expose-Headers",
+    "Upload-Offset, Location, Upload-Length, Tus-Version, Tus-Resumable, Tus-Max-Size, Tus-Extension"
   );
 }
 
