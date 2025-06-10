@@ -73,29 +73,54 @@ export function DropZoneVideo({ getInfo }) {
 
     try {
       // Get a signed URL for upload
-      const urlRequest = await fetch("/api/url");
+      const urlRequest = await fetch("/api/file");
       const urlResponse = await urlRequest.json();
 
       // Upload the file directly to Pinata using the signed URL
-      const upload = await pinata.upload.public
-        .file(file)
-        .url(urlResponse.url, {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods":
-              "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-            "Access-Control-Allow-Headers":
-              "Content-Type, Authorization, X-Requested-With",
-          },
-        });
+      const upload = await pinata.upload.public.file(file).url(urlResponse.url);
 
-      // Get the file URL
-      const url = await pinata.gateways.public.convert(upload.cid);
-      await getInfo(url);
+      // Wait a bit for Pinata to index the file
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      setUrls((prevUrls) => [...prevUrls, url]);
-      updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
-      toast.success(`File ${file.name} uploaded successfully!`);
+      // Get the file info with retries
+      let fileInfo = null;
+      let retries = 3;
+
+      while (retries > 0 && !fileInfo?.files?.length) {
+        try {
+          fileInfo = await pinata.files.public.list({
+            name: file.name,
+            limit: 1,
+          });
+
+          if (!fileInfo?.files?.length) {
+            retries--;
+            if (retries > 0) {
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+          }
+        } catch (error) {
+          console.error(`Retry ${4 - retries} failed:`, error);
+          retries--;
+          if (retries > 0) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+        }
+      }
+
+      if (fileInfo?.files?.length > 0) {
+        const cid = fileInfo.files[0].cid;
+        const url = await pinata.gateways.public.convert(cid);
+        await getInfo(url);
+
+        setUrls((prevUrls) => [...prevUrls, url]);
+        updateFileStatus(file.name, FILE_STATUS.COMPLETED, cid);
+        toast.success(`File ${file.name} uploaded successfully!`);
+      } else {
+        throw new Error(
+          "Could not find uploaded file info after multiple retries"
+        );
+      }
     } catch (e) {
       console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);

@@ -12,6 +12,6 @@ if (!process.env.NEXT_PUBLIC_GATEWAY_URL) {
 }
 
 export const pinata = new PinataSDK({
-  pinataJwt: process.env.PINATA_JWT || process.env.NEXT_PUBLIC_PINATA_JWT,
-  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL || process.env.GATEWAY_URL,
+  pinataJwt: process.env.PINATA_JWT,
+  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL,
 });
