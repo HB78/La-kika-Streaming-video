@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const metadata = {
-  title: "Creation de film",
-  description: "Page de création de film pour les administrateurs",
+  title: "Creation de films",
+  description: "Page de création de films pour les administrateurs",
 };
 
 // Sans singleton : À chaque client qui arrive, on ouvre un nouveau restaurant (inefficace)
