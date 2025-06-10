@@ -8,6 +8,10 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+// Configuration pour les gros fichiers
+export const runtime = "nodejs";
+export const maxDuration = 300; // 5 minutes
+
 export const config = {
   api: {
     responseLimit: false,
