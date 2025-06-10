@@ -1,4 +1,4 @@
-import { pinata } from "@/app/lib/pinata";
+import { pinata } from "@/app/utils/config";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
