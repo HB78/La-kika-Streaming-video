@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const FILE_SIZE_LIMITS = {
   SMALL: 100 * 1024 * 1024, // 100MB
   LARGE: 1200 * 1024 * 1024, // 1.2GB
-  CHUNK_SIZE: 4 * 1024 * 1024, // 4MB
+  CHUNK_SIZE: 50 * 1024 * 1024, // 50MB
 };
 
 // File status types
@@ -33,7 +33,7 @@ export function DropZoneVideo({ getInfo }) {
   useEffect(() => {
     const getUploadToken = async () => {
       try {
-        const response = await fetch("/api/file");
+        const response = await fetch("/api/url");
         const data = await response.json();
         setUploadToken(data.url);
       } catch (error) {
@@ -73,14 +73,17 @@ export function DropZoneVideo({ getInfo }) {
 
     try {
       const fileSizeMB = file.size / 1024 / 1024;
-      console.log(`Uploading: ${file.name} (${fileSizeMB.toFixed(2)} MB)`);
+      console.log(
+        `Starting upload: ${file.name} (${fileSizeMB.toFixed(2)} MB)`
+      );
 
-      if (fileSizeMB > 50) {
-        // Gros fichiers : TUS direct vers Pinata
-        await uploadWithTUS(file);
+      // Stratégie intelligente selon la taille
+      if (fileSizeMB <= 4) {
+        // Petits fichiers : Via serveur Next.js
+        await uploadViaServer(file);
       } else {
-        // Petits/moyens fichiers : Via proxy serveur
-        await uploadViaProxy(file);
+        // Gros fichiers : Client-side avec URL signée
+        await uploadViaClientSide(file);
       }
     } catch (e) {
       console.error("Upload error:", e);
@@ -89,19 +92,19 @@ export function DropZoneVideo({ getInfo }) {
     }
   };
 
-  // Method 1: Upload via proxy serveur (pas de limite CORS)
-  const uploadViaProxy = async (file) => {
+  // Method 1: Upload via serveur (< 4MB)
+  const uploadViaServer = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/upload-proxy", {
+    const response = await fetch("/api/file", {
       method: "POST",
       body: formData,
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.details || "Proxy upload failed");
+      throw new Error(error.details || "Server upload failed");
     }
 
     const result = await response.json();
@@ -111,76 +114,28 @@ export function DropZoneVideo({ getInfo }) {
     toast.success(`File ${file.name} uploaded successfully!`);
   };
 
-  // Method 2: Upload TUS pour gros fichiers
-  const uploadWithTUS = async (file) => {
-    // Import dynamique pour éviter les erreurs SSR
-    const tus = await import("tus-js-client");
+  // Method 2: Upload client-side avec URL signée (> 4MB)
+  const uploadViaClientSide = async (file) => {
+    // Étape 1: Récupérer URL signée
+    const urlRequest = await fetch("/api/file");
+    if (!urlRequest.ok) {
+      throw new Error("Failed to get signed URL");
+    }
 
-    return new Promise((resolve, reject) => {
-      const upload = new tus.Upload(file, {
-        endpoint: "https://uploads.pinata.cloud/v3/files",
-        chunkSize: 50 * 1024 * 1024, // 50MB
-        retryDelays: [0, 3000, 5000],
+    const urlResponse = await urlRequest.json();
 
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
-        },
+    // Étape 2: Upload direct vers Pinata
+    const uploadResult = await pinata.upload.public
+      .file(file)
+      .url(urlResponse.url);
 
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-          network: "public",
-        },
+    // Étape 3: Générer URL publique
+    const fileUrl = await pinata.gateways.public.convert(uploadResult.cid);
+    await getInfo(fileUrl);
 
-        onProgress: (bytesUploaded, bytesTotal) => {
-          const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
-          // Mettre à jour la progression si nécessaire
-        },
-
-        onError: (error) => {
-          console.error("TUS error:", error);
-          reject(error);
-        },
-
-        onSuccess: async () => {
-          console.log("TUS upload completed");
-
-          // Attendre indexation et récupérer infos
-          setTimeout(async () => {
-            try {
-              const files = await pinata.files.public.list({
-                name: file.name,
-                limit: 1,
-              });
-
-              if (files?.files?.length > 0) {
-                const uploadedFile = files.files[0];
-                const publicUrl = await pinata.gateways.public.convert(
-                  uploadedFile.cid
-                );
-
-                await getInfo(publicUrl);
-                setUrls((prevUrls) => [...prevUrls, publicUrl]);
-                updateFileStatus(
-                  file.name,
-                  FILE_STATUS.COMPLETED,
-                  uploadedFile.cid
-                );
-                toast.success(`File ${file.name} uploaded successfully!`);
-              } else {
-                throw new Error("File not found after upload");
-              }
-            } catch (error) {
-              throw new Error("Failed to verify upload: " + error.message);
-            }
-
-            resolve();
-          }, 5000);
-        },
-      });
-
-      upload.start();
-    });
+    setUrls((prevUrls) => [...prevUrls, fileUrl]);
+    updateFileStatus(file.name, FILE_STATUS.COMPLETED, uploadResult.cid);
+    toast.success(`File ${file.name} uploaded successfully!`);
   };
 
   // Helper function to update file status
@@ -210,11 +165,7 @@ export function DropZoneVideo({ getInfo }) {
   // Main upload function that decides which upload method to use based on file size
   const uploadFile = async (file) => {
     startTransition(async () => {
-      if (file.size > FILE_SIZE_LIMITS.SMALL) {
-        await uploadLargeFile(file);
-      } else {
-        await uploadSmallFile(file);
-      }
+      await uploadLargeFile(file);
     });
   };
 
