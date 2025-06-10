@@ -13,7 +13,7 @@ import * as tus from "tus-js-client";
 const FILE_SIZE_LIMITS = {
   SMALL: 100 * 1024 * 1024, // 100MB
   LARGE: 1200 * 1024 * 1024, // 1.2GB
-  CHUNK_SIZE: 50 * 1024 * 1024, // 50MB
+  CHUNK_SIZE: 4 * 1024 * 1024, // 4MB
 };
 
 // File status types
