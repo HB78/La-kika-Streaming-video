@@ -5,7 +5,7 @@ export async function POST(request) {
   try {
     const data = await request.formData();
     const file = data.get("file");
-    const uploadData = await pinata.upload.file(file);
+    const uploadData = await pinata.upload.public.file(file);
     const url = await pinata.gateways.createSignedURL({
       cid: uploadData.cid,
       expires: 3600,
