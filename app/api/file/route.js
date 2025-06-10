@@ -62,46 +62,24 @@ export async function POST(request) {
     const file = data.get("file");
 
     if (!file) {
-      return NextResponse.json(
-        { error: "No file provided" },
-        {
-          status: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods":
-              "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-            "Access-Control-Allow-Headers":
-              "Content-Type, Authorization, X-Requested-With",
-          },
-        }
-      );
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // Upload to Pinata
     const uploadData = await pinata.upload.public.file(file);
-    return NextResponse.json(uploadData, {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods":
-          "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-        "Access-Control-Allow-Headers":
-          "Content-Type, Authorization, X-Requested-With",
+
+    return NextResponse.json(
+      {
+        cid: uploadData.cid,
+        url: await pinata.gateways.public.convert(uploadData.cid),
       },
-    });
+      { status: 200 }
+    );
   } catch (e) {
     console.error("Upload error:", e);
     return NextResponse.json(
       { error: "Internal Server Error", details: e.message },
-      {
-        status: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods":
-            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Authorization, X-Requested-With",
-        },
-      }
+      { status: 500 }
     );
   }
 }
