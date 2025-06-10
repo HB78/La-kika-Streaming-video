@@ -1,42 +1,107 @@
+// Le fichier pour upload en utilisant Pinata et en passant par le coté client
+// cela marche pour les gros fichiers on outre passe la limite de Next.js
+
+// Cette route sert uniquement à obtenir une URL signée de Pinata pour les uploads directs. Elle est utilisée pour les petits fichiers. UN UPLOAD EXPRESS RAPIDE ET DIRECT
+
 import { pinata } from "@/app/utils/config";
 import { NextResponse } from "next/server";
 
-// export const bodyParser = false;
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  // If you're going to use auth you'll want to verify here
+  try {
+    const url = await pinata.upload.public.createSignedURL({
+      expires: 30, // URL valide pendant 30 secondes
+      options: {
+        network: "public",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, X-Requested-With",
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { url: url },
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, X-Requested-With",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error creating signed URL:", error);
+    return NextResponse.json(
+      { error: "Error creating signed URL" },
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, X-Requested-With",
+        },
+      }
+    );
+  }
+}
 
 export async function POST(request) {
   try {
     const data = await request.formData();
     const file = data.get("file");
-    const metadata = data.get("metadata");
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-
-    // Handle TUS upload (large files)
-    //Si il y a des metadata, c'est un gros fichier
-    if (metadata) {
-      const metadataObj = JSON.parse(metadata);
-      const uploadData = await pinata.upload.public.file(file, {
-        pinataMetadata: {
-          name: metadataObj.filename,
-          keyvalues: {
-            filetype: metadataObj.filetype,
-            network: metadataObj.network,
+      return NextResponse.json(
+        { error: "No file provided" },
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":
+              "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers":
+              "Content-Type, Authorization, X-Requested-With",
           },
-        },
-      });
-      return NextResponse.json(uploadData, { status: 200 });
+        }
+      );
     }
 
-    // Handle regular upload (small files)
     const uploadData = await pinata.upload.public.file(file);
-    return NextResponse.json(uploadData, { status: 200 });
+    return NextResponse.json(uploadData, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods":
+          "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+        "Access-Control-Allow-Headers":
+          "Content-Type, Authorization, X-Requested-With",
+      },
+    });
   } catch (e) {
     console.error("Upload error:", e);
     return NextResponse.json(
       { error: "Internal Server Error", details: e.message },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, X-Requested-With",
+        },
+      }
     );
   }
 }

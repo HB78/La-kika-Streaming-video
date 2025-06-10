@@ -7,7 +7,6 @@ import { VideoIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import * as tus from "tus-js-client";
 
 // Constants for file size limits
 const FILE_SIZE_LIMITS = {
@@ -34,7 +33,7 @@ export function DropZoneVideo({ getInfo }) {
   useEffect(() => {
     const getUploadToken = async () => {
       try {
-        const response = await fetch("/api/url");
+        const response = await fetch("/api/file");
         const data = await response.json();
         setUploadToken(data.url);
       } catch (error) {
@@ -68,91 +67,39 @@ export function DropZoneVideo({ getInfo }) {
     }
   };
 
-  // Function to handle large file uploads using TUS (resumable uploads)
+  // Function to handle large file uploads
   const uploadLargeFile = async (file) => {
     updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
     try {
-      const upload = new tus.Upload(file, {
-        endpoint: "/api/file",
-        chunkSize: FILE_SIZE_LIMITS.CHUNK_SIZE,
-        retryDelays: [0, 3000, 5000, 10000, 20000],
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
-        },
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-          network: "public",
-        },
-        onError: (error) => {
-          console.error(`Upload failed: ${error}`);
-          updateFileStatus(file.name, FILE_STATUS.ERROR);
-          toast.error(`Upload failed for ${file.name}`);
-        },
-        onProgress: (bytesUploaded, bytesTotal) => {
-          const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
-          updateFileProgress(file.name, percentage);
-        },
-        onSuccess: async () => {
-          try {
-            // Add a small delay to allow Pinata to index the file
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Get a signed URL for upload
+      const urlRequest = await fetch("/api/url");
+      const urlResponse = await urlRequest.json();
 
-            // Try to get the file info with retries
-            let fileInfo = null;
-            let retries = 3;
+      // Upload the file directly to Pinata using the signed URL
+      const upload = await pinata.upload.public
+        .file(file)
+        .url(urlResponse.url, {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":
+              "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers":
+              "Content-Type, Authorization, X-Requested-With",
+          },
+        });
 
-            while (retries > 0 && !fileInfo?.files?.length) {
-              try {
-                fileInfo = await pinata.files.public.list({
-                  name: file.name,
-                  limit: 1,
-                });
+      // Get the file URL
+      const url = await pinata.gateways.public.convert(upload.cid);
+      await getInfo(url);
 
-                if (!fileInfo?.files?.length) {
-                  retries--;
-                  if (retries > 0) {
-                    await new Promise((resolve) => setTimeout(resolve, 2000));
-                  }
-                }
-              } catch (error) {
-                console.error(`Retry ${4 - retries} failed:`, error);
-                retries--;
-                if (retries > 0) {
-                  await new Promise((resolve) => setTimeout(resolve, 2000));
-                }
-              }
-            }
-
-            if (fileInfo?.files?.length > 0) {
-              const cid = fileInfo.files[0].cid;
-              const url = await pinata.gateways.public.convert(cid);
-              await getInfo(url);
-
-              setUrls((prevUrls) => [...prevUrls, url]);
-              updateFileStatus(file.name, FILE_STATUS.COMPLETED, cid);
-              toast.success(`File ${file.name} uploaded successfully!`);
-            } else {
-              throw new Error(
-                "Could not find uploaded file info after multiple retries"
-              );
-            }
-          } catch (error) {
-            console.error("Error getting CID after upload:", error);
-            updateFileStatus(file.name, FILE_STATUS.ERROR);
-            toast.error(
-              `Upload completed but couldn't get file details for ${file.name}: ${error.message}`
-            );
-          }
-        },
-      });
-
-      upload.start();
+      setUrls((prevUrls) => [...prevUrls, url]);
+      updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
+      toast.success(`File ${file.name} uploaded successfully!`);
     } catch (e) {
-      console.error("Upload setup error:", e);
+      console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Trouble setting up upload for ${file.name}: ${e.message}`);
+      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
     }
   };
 
@@ -183,7 +130,11 @@ export function DropZoneVideo({ getInfo }) {
   // Main upload function that decides which upload method to use based on file size
   const uploadFile = async (file) => {
     startTransition(async () => {
-      await uploadSmallFile(file);
+      if (file.size > FILE_SIZE_LIMITS.SMALL) {
+        await uploadLargeFile(file);
+      } else {
+        await uploadSmallFile(file);
+      }
     });
   };
 
