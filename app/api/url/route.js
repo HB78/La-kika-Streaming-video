@@ -9,15 +9,17 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  // If you're going to use auth you'll want to verify here
   try {
     const url = await pinata.upload.public.createSignedURL({
-      expires: 30, // URL valide pendant 30 secondes
+      expires: 1000 * 60 * 60 * 24 * 30, // The only required param
     });
-    return NextResponse.json({ url: url }, { status: 200 });
+    console.log("url:", url);
+    return NextResponse.json({ url: url }, { status: 200 }); // Returns the signed upload URL
   } catch (error) {
-    console.error("Error creating signed URL:", error);
+    console.log(error);
     return NextResponse.json(
-      { error: "Error creating signed URL" },
+      { text: "Error creating API Key:" },
       { status: 500 }
     );
   }
