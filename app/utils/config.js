@@ -13,5 +13,5 @@ if (typeof window === "undefined" && !process.env.PINATA_JWT) {
 
 export const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT || process.env.NEXT_PUBLIC_PINATA_JWT,
-  pinataGateway: process.env.GATEWAY_URL || process.env.NEXT_PUBLIC_GATEWAY_URL,
+  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL,
 });
