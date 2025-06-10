@@ -1,0 +1,31 @@
+{
+  "functions": {
+    "app/api/file/route.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/file",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Content-Type, Content-Length, Content-MDS, Accept, Accept-Version, Date, X-Api-Version, Upload-Length, Upload-Metadata, Upload-Offset, Tus-Resumable"
+        },
+        {
+          "key": "Access-Control-Expose-Headers",
+          "value": "Upload-Offset, Location, Upload-Length, Tus-Version, Tus-Resumable, Tus-Max-Size, Tus-Extension"
+        }
+      ]
+    }
+  ]
+}
