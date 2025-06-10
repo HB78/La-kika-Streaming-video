@@ -72,32 +72,43 @@ export function DropZoneVideo({ getInfo }) {
     updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
     try {
-      // Create form data
+      // Get signed URL from our API
+      const signedUrlResponse = await fetch("/api/signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          filesize: file.size,
+        }),
+      });
+
+      if (!signedUrlResponse.ok) {
+        throw new Error("Failed to get signed URL");
+      }
+
+      const { signedUrl } = await signedUrlResponse.json();
+
+      // Upload directly to Pinata
       const formData = new FormData();
       formData.append("file", file);
 
-      // Upload through our backend API
-      const response = await fetch("/api/file", {
+      const uploadResponse = await fetch(signedUrl, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+      if (!uploadResponse.ok) {
+        throw new Error("Upload to Pinata failed");
       }
 
-      const data = await response.json();
+      const uploadResult = await uploadResponse.json();
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      // Get the file URL
-      const url = await pinata.gateways.public.convert(data.cid);
+      // Generate public URL
+      const url = `https://gateway.pinata.cloud/ipfs/${uploadResult.cid}`;
       await getInfo(url);
 
       setUrls((prevUrls) => [...prevUrls, url]);
-      updateFileStatus(file.name, FILE_STATUS.COMPLETED, data.cid);
+      updateFileStatus(file.name, FILE_STATUS.COMPLETED, uploadResult.cid);
       toast.success(`File ${file.name} uploaded successfully!`);
     } catch (e) {
       console.error("Upload error:", e);
