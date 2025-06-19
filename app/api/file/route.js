@@ -10,7 +10,7 @@ export async function POST(request) {
     const metadata = data.get("metadata");
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file provided" });
     }
 
     // Handle TUS upload (large files)
@@ -25,19 +25,42 @@ export async function POST(request) {
           },
         },
       });
-      return NextResponse.json(uploadData, {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods":
-            "GET, POST, PUT, DELETE, OPTIONS, PATCH",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Authorization, X-Requested-With",
-        },
-      });
+      return NextResponse.json(uploadData, { status: 200 });
     }
 
     // Handle regular upload (small files)
+    const uploadData = await pinata.upload.public.file(file);
+    return NextResponse.json(uploadData, { status: 200 });
+  } catch (e) {
+    console.error("Upload error:", e);
+    return NextResponse.json(
+      { error: "Internal Server Error", details: e.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request) {
+  try {
+    const data = await request.formData();
+    const file = data.get("file");
+
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file provided" },
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":
+              "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers":
+              "Content-Type, Authorization, X-Requested-With",
+          },
+        }
+      );
+    }
+
     const uploadData = await pinata.upload.public.file(file);
     return NextResponse.json(uploadData, {
       status: 200,

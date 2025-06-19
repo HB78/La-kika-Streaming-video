@@ -4,14 +4,16 @@ import { pinata } from "@/app/utils/config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VideoIcon, XIcon } from "lucide-react";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import * as tus from "tus-js-client";
 
 // Constants for file size limits
 const FILE_SIZE_LIMITS = {
   SMALL: 100 * 1024 * 1024, // 100MB
   LARGE: 1200 * 1024 * 1024, // 1.2GB
+  CHUNK_SIZE: 50 * 1024 * 1024, // 50MB
 };
 
 // File status types
@@ -26,50 +28,31 @@ export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
   const [urls, setUrls] = useState([]);
   const [isPending, startTransition] = useTransition();
+  const [uploadToken, setUploadToken] = useState(null);
 
-  // Function to handle small file uploads (files < 100MB) - Direct upload
+  // Fetch upload token when component mounts
+  useEffect(() => {
+    const getUploadToken = async () => {
+      try {
+        const response = await fetch("/api/url");
+        const data = await response.json();
+        setUploadToken(data.url);
+      } catch (error) {
+        console.error("Error fetching upload token:", error);
+        toast.error("Couldn't prepare upload. Please try again.");
+      }
+    };
+
+    getUploadToken();
+  }, []);
+
+  // Function to handle regular uploads (files < 100MB)
   const uploadSmallFile = async (file) => {
     try {
       updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
-      // Method 1: Direct upload through API route (recommended for small files)
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/files", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-
-      const url = await response.json();
-      await getInfo(url);
-      setUrls((prevUrls) => [...prevUrls, url]);
-      updateFileStatus(file.name, FILE_STATUS.COMPLETED);
-      toast.success(`File ${file.name} uploaded successfully!`);
-    } catch (e) {
-      console.error("Upload error:", e);
-      updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
-    }
-  };
-
-  // Function to handle large file uploads (files > 100MB) - Signed URL method
-  const uploadLargeFile = async (file) => {
-    try {
-      updateFileStatus(file.name, FILE_STATUS.UPLOADING);
-
-      // Method 2: Signed URL upload (recommended for large files)
       const urlRequest = await fetch("/api/url");
       const urlResponse = await urlRequest.json();
-
-      if (!urlResponse.url) {
-        throw new Error("Failed to get signed upload URL");
-      }
-
       const upload = await pinata.upload.public.file(file).url(urlResponse.url);
 
       const url = await pinata.gateways.public.convert(upload.cid);
@@ -81,7 +64,95 @@ export function DropZoneVideo({ getInfo }) {
     } catch (e) {
       console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
+      toast.error(`Trouble uploading file ${file.name}`);
+    }
+  };
+
+  // Function to handle large file uploads using TUS (resumable uploads)
+  const uploadLargeFile = async (file) => {
+    updateFileStatus(file.name, FILE_STATUS.UPLOADING);
+
+    try {
+      const upload = new tus.Upload(file, {
+        endpoint: "/api/file",
+        chunkSize: FILE_SIZE_LIMITS.CHUNK_SIZE,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          Authorization: `Bearer 8XOZ20LiKgwEtrO0JY5Lh_ZNFZ-h5wBpwsVipgXWZNotlDkSGbNhJufAg1P9TXxW`,
+        },
+        metadata: {
+          filename: file.name,
+          filetype: file.type,
+          network: "public",
+        },
+        onError: (error) => {
+          console.error(`Upload failed: ${error}`);
+          updateFileStatus(file.name, FILE_STATUS.ERROR);
+          toast.error(`Upload failed for ${file.name}`);
+        },
+        onProgress: (bytesUploaded, bytesTotal) => {
+          const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
+          updateFileProgress(file.name, percentage);
+        },
+        onSuccess: async () => {
+          try {
+            // Add a small delay to allow Pinata to index the file
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Try to get the file info with retries
+            let fileInfo = null;
+            let retries = 3;
+
+            while (retries > 0 && !fileInfo?.files?.length) {
+              try {
+                fileInfo = await pinata.files.public.list({
+                  name: file.name,
+                  limit: 1,
+                });
+
+                if (!fileInfo?.files?.length) {
+                  retries--;
+                  if (retries > 0) {
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                  }
+                }
+              } catch (error) {
+                console.error(`Retry ${4 - retries} failed:`, error);
+                retries--;
+                if (retries > 0) {
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                }
+              }
+            }
+
+            if (fileInfo?.files?.length > 0) {
+              const cid = fileInfo.files[0].cid;
+              const url = await pinata.gateways.public.convert(cid);
+              await getInfo(url);
+
+              setUrls((prevUrls) => [...prevUrls, url]);
+              updateFileStatus(file.name, FILE_STATUS.COMPLETED, cid);
+              toast.success(`File ${file.name} uploaded successfully!`);
+            } else {
+              throw new Error(
+                "Could not find uploaded file info after multiple retries"
+              );
+            }
+          } catch (error) {
+            console.error("Error getting CID after upload:", error);
+            updateFileStatus(file.name, FILE_STATUS.ERROR);
+            toast.error(
+              `Upload completed but couldn't get file details for ${file.name}: ${error.message}`
+            );
+          }
+        },
+      });
+
+      upload.start();
+    } catch (e) {
+      console.error("Upload setup error:", e);
+      updateFileStatus(file.name, FILE_STATUS.ERROR);
+      toast.error(`Trouble setting up upload for ${file.name}: ${e.message}`);
     }
   };
 
@@ -91,6 +162,18 @@ export function DropZoneVideo({ getInfo }) {
       prevFiles.map((item) => {
         if (item.file.name === fileName) {
           return { ...item, status, id: id || item.id };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Helper function to update file progress
+  const updateFileProgress = (fileName, progress) => {
+    setFiles((prevFiles) =>
+      prevFiles.map((item) => {
+        if (item.file.name === fileName) {
+          return { ...item, progress };
         }
         return item;
       })
@@ -205,9 +288,9 @@ export function DropZoneVideo({ getInfo }) {
         )}
       </div>
 
-      {/* Display uploaded files */}
+      {/* Display uploaded files with progress bars for large files */}
       <div className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4">
-        {files.map(({ file, id, status }, index) => (
+        {files.map(({ file, id, status, progress }, index) => (
           <div key={file.name} className="relative w-full group">
             <div className="relative">
               <div
@@ -218,12 +301,15 @@ export function DropZoneVideo({ getInfo }) {
                 )}
               >
                 <VideoIcon className="w-9 h-9 text-blue-400" />
-                {status === "uploading" && (
+                {status === "uploading" && progress !== undefined && (
                   <div className="w-full mt-2 px-2">
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div className="bg-blue-600 h-2.5 rounded-full animate-pulse"></div>
+                      <div
+                        className="bg-blue-600 h-2.5 rounded-full"
+                        style={{ width: `${progress}%` }}
+                      ></div>
                     </div>
-                    <p className="text-xs text-center mt-1">Uploading...</p>
+                    <p className="text-xs text-center mt-1">{progress}%</p>
                   </div>
                 )}
                 {status === "pending" && (
