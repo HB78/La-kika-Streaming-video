@@ -4,13 +4,13 @@ import { pinata } from "@/app/utils/config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VideoIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
 // Constants for file size limits
 const FILE_SIZE_LIMITS = {
-  SMALL: 100 * 1024 * 1024, // 100MB
+  SMALL: 50 * 1024 * 1024, // 50MB - limite Next.js par défaut
   LARGE: 1200 * 1024 * 1024, // 1.2GB
 };
 
@@ -26,68 +26,69 @@ export function DropZoneVideo({ getInfo }) {
   const [files, setFiles] = useState([]);
   const [urls, setUrls] = useState([]);
   const [isPending, startTransition] = useTransition();
-  const [uploadToken, setUploadToken] = useState(null);
 
-  // Fetch upload token when component mounts
-  useEffect(() => {
-    const getUploadToken = async () => {
-      try {
-        const response = await fetch("/api/url");
-        const data = await response.json();
-        setUploadToken(data.url);
-      } catch (error) {
-        console.error("Error fetching upload token:", error);
-        toast.error("Couldn't prepare upload. Please try again.");
-      }
-    };
-
-    getUploadToken();
-  }, []);
-
-  // Function to handle regular uploads (files < 100MB)
+  // Function to handle small file uploads via API route
   const uploadSmallFile = async (file) => {
     try {
       updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
-      const urlRequest = await fetch("/api/url");
-      const urlResponse = await urlRequest.json();
-      const upload = await pinata.upload.public.file(file).url(urlResponse.url);
+      // Créer FormData avec le fichier
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const url = await pinata.gateways.public.convert(upload.cid);
+      // Upload via notre API route
+      const response = await fetch("/api/file", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const uploadData = await response.json();
+
+      // Construire l'URL du fichier
+      const gatewayUrl =
+        process.env.NEXT_PUBLIC_GATEWAY_URL ||
+        "https://lime-worried-lungfish-409.mypinata.cloud";
+      const url = `${gatewayUrl}/ipfs/${uploadData.cid}`;
+
       await getInfo(url);
-
       setUrls((prevUrls) => [...prevUrls, url]);
-      updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
+      updateFileStatus(file.name, FILE_STATUS.COMPLETED, uploadData.cid);
       toast.success(`File ${file.name} uploaded successfully!`);
     } catch (e) {
       console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
-      toast.error(`Trouble uploading file ${file.name}`);
+      toast.error(`Trouble uploading file ${file.name}: ${e.message}`);
     }
   };
 
-  // Function to handle large file uploads using direct Pinata upload
+  // Function to handle large file uploads via signed URL
   const uploadLargeFile = async (file) => {
-    updateFileStatus(file.name, FILE_STATUS.UPLOADING);
-
     try {
-      // Pour les gros fichiers, on utilise l'upload direct de Pinata
-      // qui gère automatiquement les chunks
-      const upload = await pinata.upload.public.file(file, {
-        pinataMetadata: {
-          name: file.name,
-          keyvalues: {
-            filetype: file.type,
-            network: "public",
-            size: file.size.toString(),
-          },
-        },
-      });
+      updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
-      const url = await pinata.gateways.public.convert(upload.cid);
-      await getInfo(url);
+      // Obtenir une URL signée pour l'upload direct
+      const urlResponse = await fetch("/api/url");
+      if (!urlResponse.ok) {
+        throw new Error("Failed to get signed URL");
+      }
 
-      setUrls((prevUrls) => [...prevUrls, url]);
+      const { url: signedUrl } = await urlResponse.json();
+
+      // Upload direct vers Pinata avec l'URL signée
+      const upload = await pinata.upload.public.file(file).url(signedUrl);
+
+      // Construire l'URL finale
+      const gatewayUrl =
+        process.env.NEXT_PUBLIC_GATEWAY_URL ||
+        "https://lime-worried-lungfish-409.mypinata.cloud";
+      const finalUrl = `${gatewayUrl}/ipfs/${upload.cid}`;
+
+      await getInfo(finalUrl);
+      setUrls((prevUrls) => [...prevUrls, finalUrl]);
       updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
       toast.success(`File ${file.name} uploaded successfully!`);
     } catch (e) {
@@ -109,15 +110,13 @@ export function DropZoneVideo({ getInfo }) {
     );
   };
 
-  // Main upload function that decides which upload method to use based on file size
+  // Main upload function that decides which method to use
   const uploadFile = async (file) => {
-    startTransition(async () => {
-      if (file.size > FILE_SIZE_LIMITS.SMALL) {
-        await uploadLargeFile(file);
-      } else {
-        await uploadSmallFile(file);
-      }
-    });
+    if (file.size > FILE_SIZE_LIMITS.SMALL) {
+      await uploadLargeFile(file);
+    } else {
+      await uploadSmallFile(file);
+    }
   };
 
   const handleDelete = async (fileId, fileName) => {
@@ -165,7 +164,11 @@ export function DropZoneVideo({ getInfo }) {
       ]);
 
       // Start uploading each file
-      acceptedFiles.forEach((file) => uploadFile(file));
+      acceptedFiles.forEach((file) => {
+        startTransition(async () => {
+          await uploadFile(file);
+        });
+      });
     }
   }, []);
 
