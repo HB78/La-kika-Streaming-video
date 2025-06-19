@@ -1,6 +1,8 @@
 import { pinata } from "@/app/utils/config";
 import { NextResponse } from "next/server";
 
+// export const bodyParser = false;
+
 export async function POST(request) {
   try {
     const data = await request.formData();
@@ -11,7 +13,8 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file provided" });
     }
 
-    // Handle upload with metadata
+    // Handle TUS upload (large files)
+    //Si il y a des metadata, c'est un gros fichier
     if (metadata) {
       const metadataObj = JSON.parse(metadata);
       const uploadData = await pinata.upload.public.file(file, {
@@ -26,7 +29,7 @@ export async function POST(request) {
       return NextResponse.json(uploadData, { status: 200 });
     }
 
-    // Handle regular upload
+    // Handle regular upload (small files)
     const uploadData = await pinata.upload.public.file(file);
     return NextResponse.json(uploadData, { status: 200 });
   } catch (e) {
