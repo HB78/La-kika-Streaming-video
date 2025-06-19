@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Configuration pour les gros fichiers
+  experimental: {
+    serverComponentsExternalPackages: ["pinata"],
+  },
+  // Augmenter la limite de taille des fichiers pour les API routes
+  api: {
+    bodyParser: {
+      sizeLimit: "50mb", // Limite pour les petits fichiers
+    },
+    responseLimit: false,
+  },
   images: {
     remotePatterns: [
       {
