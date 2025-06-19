@@ -7,11 +7,11 @@ import { pinata } from "@/app/utils/config";
 import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
 import { NextResponse } from "next/server";
 
-export const bodyParser = false;
+// export const bodyParser = false;
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function GET() {
   // If you're going to use auth you'll want to verify here
   const adminCheck = await isAdmin();
 

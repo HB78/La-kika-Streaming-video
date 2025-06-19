@@ -184,7 +184,7 @@ export function DropZoneVideo({ getInfo }) {
   const uploadFile = async (file) => {
     startTransition(async () => {
       if (file.size > FILE_SIZE_LIMITS.SMALL) {
-        await uploadSmallFile(file);
+        await uploadLargeFile(file);
       } else {
         await uploadSmallFile(file);
       }
