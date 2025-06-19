@@ -40,7 +40,7 @@ export async function POST(request) {
   }
 }
 
-export async function POST(request) {
+export async function GET(request) {
   try {
     const data = await request.formData();
     const file = data.get("file");
