@@ -11,7 +11,7 @@ export const bodyParser = false;
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function POST() {
   // If you're going to use auth you'll want to verify here
   const adminCheck = await isAdmin();
 
@@ -19,6 +19,7 @@ export async function GET() {
   if (adminCheck.status !== 200) {
     return adminCheck; // Retourner directement l'erreur
   }
+
   try {
     const url = await pinata.upload.public.createSignedURL({
       expires: 1000 * 60 * 60 * 24 * 30, // The only required param
