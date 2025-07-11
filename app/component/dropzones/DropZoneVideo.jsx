@@ -82,6 +82,10 @@ export function DropZoneVideo({ getInfo }) {
         method: "POST",
         body: data,
       });
+      if (!urlRequest.ok) {
+        const text = await urlRequest.text();
+        throw new Error(`Erreur upload: ${text}`);
+      }
       const urlResponse = await urlRequest.json();
 
       await getInfo(urlResponse.url);
