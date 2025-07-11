@@ -86,7 +86,7 @@ export function DropZoneVideo({ getInfo }) {
 
       await getInfo(urlResponse.url);
 
-      setUrls((prevUrls) => [...prevUrls, url]);
+      setUrls((prevUrls) => [...prevUrls, urlResponse.url]);
       updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
       toast.success(
         `File ${file.name} uploaded successfully!, ${urlResponse.message} `
