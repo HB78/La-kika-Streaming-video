@@ -7,7 +7,7 @@ import { pinata } from "@/app/utils/config";
 import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
 import { NextResponse } from "next/server";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export async function POST(req) {
   // If you're going to use auth you'll want to verify here
