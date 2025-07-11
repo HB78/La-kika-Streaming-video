@@ -28,6 +28,10 @@ const nextConfig = {
         hostname: "lime-worried-lungfish-409.mypinata.cloud",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "**.mypinata.cloud",
+      },
     ],
   },
 };
