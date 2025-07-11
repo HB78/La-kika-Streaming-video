@@ -7,7 +7,6 @@ import { VideoIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import * as tus from "tus-js-client";
 
 // Constants for file size limits
 const FILE_SIZE_LIMITS = {
@@ -69,29 +68,38 @@ export function DropZoneVideo({ getInfo }) {
   };
 
   const uploadLargeFile = async (file) => {
-    const upload = new tus.Upload(file, {
-      endpoint: "https://uploads.pinata.cloud/v3/files",
-      chunkSize: 50 * 1024 * 1024, // 50MB
-      retryDelays: [0, 3000, 5000, 10000, 20000],
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
-      },
-      metadata: {
-        filename: file.name,
-        filetype: file.type,
-      },
-      onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = Math.round((bytesUploaded / bytesTotal) * 100);
-        // update progress bar
-      },
-      onSuccess: async () => {
-        // Récupère le CID et l’URL via Pinata API
-      },
-      onError: (error) => {
-        // Gère l’erreur
-      },
-    });
-    upload.start();
+    try {
+      if (!file) {
+        alert("No file selected");
+        return;
+      }
+      updateFileStatus(file.name, FILE_STATUS.UPLOADING);
+
+      const data = new FormData();
+      data.set("file", file);
+
+      const urlRequest = await fetch("/api/file", {
+        method: "POST",
+        body: data,
+      });
+      if (!urlRequest.ok) {
+        const text = await urlRequest.text();
+        throw new Error(`Erreur upload: ${text}`);
+      }
+      const urlResponse = await urlRequest.json();
+
+      await getInfo(urlResponse.url);
+
+      setUrls((prevUrls) => [...prevUrls, urlResponse.url]);
+      updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
+      toast.success(
+        `File ${file.name} uploaded successfully!, ${urlResponse.message} `
+      );
+    } catch (e) {
+      console.error("Upload error:", e);
+      updateFileStatus(file.name, FILE_STATUS.ERROR);
+      toast.error(`Trouble uploading file ${file.name}`);
+    }
   };
 
   // Helper function to update file status
