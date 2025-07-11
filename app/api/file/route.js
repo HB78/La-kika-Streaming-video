@@ -9,13 +9,7 @@ import { NextResponse } from "next/server";
 
 // export const dynamic = "force-dynamic";
 
-export const config = {
-  api: {
-    bodyparser: false,
-  },
-};
-
-export async function POST() {
+export async function POST(req) {
   // If you're going to use auth you'll want to verify here
   const adminCheck = await isAdmin();
 
@@ -25,11 +19,15 @@ export async function POST() {
   }
 
   try {
-    const url = await pinata.upload.public.createSignedURL({
-      expires: 1000 * 60 * 60 * 24 * 30, // The only required param
-    });
-    console.log("url:", url);
-    return NextResponse.json({ url: url }, { status: 200 }); // Returns the signed upload URL
+    const data = await req.formData();
+    const file = data.get("file");
+
+    const { cid } = await pinata.upload.public.file(file);
+    const url = await pinata.gateways.public.convert(cid);
+    return NextResponse.json(
+      { url: url, message: "upload de gros fichier réussi coté back" },
+      { status: 200 }
+    ); // Returns the signed upload URL
   } catch (error) {
     console.log("error: API URL", error);
     return NextResponse.json(

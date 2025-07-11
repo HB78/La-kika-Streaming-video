@@ -69,18 +69,28 @@ export function DropZoneVideo({ getInfo }) {
 
   const uploadLargeFile = async (file) => {
     try {
+      if (!file) {
+        alert("No file selected");
+        return;
+      }
       updateFileStatus(file.name, FILE_STATUS.UPLOADING);
 
-      const urlRequest = await fetch("/api/file");
-      const urlResponse = await urlRequest.json();
-      const upload = await pinata.upload.public.file(file).url(urlResponse.url);
+      const data = new FormData();
+      data.set("file", file);
 
-      const url = await pinata.gateways.public.convert(upload.cid);
-      await getInfo(url);
+      const urlRequest = await fetch("/api/file", {
+        method: "POST",
+        body: data,
+      });
+      const urlResponse = await urlRequest.json();
+
+      await getInfo(urlResponse.url);
 
       setUrls((prevUrls) => [...prevUrls, url]);
       updateFileStatus(file.name, FILE_STATUS.COMPLETED, upload.cid);
-      toast.success(`File ${file.name} uploaded successfully!`);
+      toast.success(
+        `File ${file.name} uploaded successfully!, ${urlResponse.message} `
+      );
     } catch (e) {
       console.error("Upload error:", e);
       updateFileStatus(file.name, FILE_STATUS.ERROR);
