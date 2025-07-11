@@ -7,7 +7,7 @@ import { pinata } from "@/app/utils/config";
 import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
 import { NextResponse } from "next/server";
 
-export const bodyParser = false;
+// export const bodyParser = false;
 
 export const dynamic = "force-dynamic";
 
