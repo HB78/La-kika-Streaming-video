@@ -2,7 +2,7 @@
 //je voulais inclure id dans le body et non dans l'url API
 //je voulais gagner du temps et simplifier la logique
 
-import { pinata } from "@/app/utils/config";
+import { deleteFileFromS3 } from "@/app/utils/aws-s3-config";
 import { extractFileIdFromUrl } from "@/lib/dryApiFunction/extractUrl";
 import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
 import prisma from "@/lib/singleton/prisma";
@@ -53,46 +53,19 @@ export const DELETE = async (req) => {
       if (fileUrl) filesToDelete.push(fileUrl);
     }
 
-    // Suppression des fichiers sur Pinata
+    // Suppression des fichiers sur S3
     if (filesToDelete.length > 0) {
-      try {
-        console.log("Recherche des fichiers à supprimer:", filesToDelete);
-
-        // Récupérer la liste des fichiers
-        const fileList = await pinata.files.public.list();
-        console.log("Liste des fichiers disponibles:", fileList);
-
-        // Trouver les IDs correspondant aux CIDs
-        const filesToDeleteWithIds = filesToDelete
-          .map((cid) => {
-            const file = fileList.files.find((f) => f.cid === cid);
-            if (file) {
-              console.log(`Fichier trouvé - CID: ${cid}, ID: ${file.id}`);
-              return file.id;
-            }
-            console.log(`Fichier non trouvé pour le CID: ${cid}`);
-            return null;
-          })
-          .filter((id) => id !== null);
-
-        if (filesToDeleteWithIds.length > 0) {
-          console.log(
-            "Suppression des fichiers avec IDs:",
-            filesToDeleteWithIds
-          );
-          const deleteResult =
-            await pinata.files.public.delete(filesToDeleteWithIds);
-          console.log("Résultat suppression:", deleteResult);
-        } else {
-          console.log("Aucun fichier trouvé à supprimer");
+      for (const key of filesToDelete) {
+        try {
+          await deleteFileFromS3(key);
+          console.log("Fichier supprimé sur S3:", key);
+        } catch (e) {
+          console.error("Erreur suppression S3:", e);
         }
-      } catch (pinataError) {
-        console.error("Erreur Pinata:", pinataError);
-        console.error("Détails:", pinataError.message);
       }
     }
 
-    // Suppression du film de la base de données
+    // Suppression de l'épisode de la base de données
     const deletedItem = await prisma.episode.delete({
       where: { id },
     });

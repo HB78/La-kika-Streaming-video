@@ -10,6 +10,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "pub-be71b566257149e799a61df54a34aff7.r2.dev",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
         hostname: "utfs.io",
         pathname: "**",
       },

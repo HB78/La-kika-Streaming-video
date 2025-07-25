@@ -1,6 +1,6 @@
 "use server";
 
-import { pinata } from "@/app/utils/config";
+import { deleteFileFromS3 } from "@/app/utils/aws-s3-config";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
@@ -24,25 +24,15 @@ export const deleteImagesAction = async (fileId) => {
   if (!fileId || fileId.trim() === "") {
     return {
       success: false,
-      message: "Aucun fichier à supprimer: ID manquant",
-    };
-  }
-
-  const fileFounded = await pinata.files.public.list().cid(fileId);
-  if (!fileFounded || fileFounded.files.length === 0) {
-    return {
-      success: false,
-      message: "Aucun fichier trouvé avec cet ID",
+      message: "Aucun fichier à supprimer: clé manquante",
     };
   }
 
   try {
-    const res = await pinata.files.public.delete([fileFounded.files[0].id]);
-
+    await deleteFileFromS3(fileId);
     return {
       success: true,
       message: "Fichier supprimé avec succès",
-      data: res,
     };
   } catch (error) {
     console.error("Erreur lors de la suppression:", error);
