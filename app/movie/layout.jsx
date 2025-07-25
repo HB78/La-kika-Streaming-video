@@ -1,4 +1,7 @@
+import prisma from "@/lib/singleton/prisma";
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: "Creation de films",
@@ -10,11 +13,22 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   try {
-    // Vérification si l'utilisateur est admin
-    const adminCheck = await isAdmin();
+    const session = await getServerSession(authOptions);
 
-    // Vérifier si c'est une erreur
-    if (adminCheck.status !== 200) {
+    if (!session?.user?.id) {
+      redirect("/");
+    }
+
+    // Vérification en base de données d'abord
+    const checkIfUserIsAdmin = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isAdmin: true },
+    });
+
+    // verfie si checkIfUserIsAdmin undefined ou null
+    //verifie si checkIfUserIsAdmin.isAdmin est false ou true ou undefined ou null
+    //necessite ? et !
+    if (!checkIfUserIsAdmin?.isAdmin) {
       redirect("/");
     }
 
