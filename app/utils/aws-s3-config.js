@@ -13,12 +13,6 @@ const s3 = new S3Client({
     accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY || "",
   },
-  // Configuration pour les gros fichiers
-  requestHandler: {
-    // Timeout étendu pour les gros uploads
-    requestTimeout: 300000, // 5 minutes
-    connectionTimeout: 60000, // 1 minute
-  },
 });
 
 export async function uploadFileToS3(file, fileName, prefix) {
