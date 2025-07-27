@@ -1,7 +1,7 @@
 "use client";
 import { deleteImagesAction } from "@/app/actions";
+import { useClientUpload } from "@/app/utils/hook/useClientUpload";
 import { Button } from "@/components/ui/button";
-import { useClientUpload } from "@/hooks/useClientUpload";
 import { extractFileIdFromUrl } from "@/lib/dryApiFunction/extractUrl";
 import { cn } from "@/lib/utils";
 import {
