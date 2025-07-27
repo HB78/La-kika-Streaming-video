@@ -142,7 +142,7 @@ export function DropZoneVideo({ getInfo }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: 1000 * 1024 * 1024, // ✅ 1000MB = 1GB
+    maxSize: 2500 * 1024 * 1024, // ✅ 1000MB = 1GB
     accept: {
       "video/*": [".mp4", ".mov", ".avi", ".mkv", ".webm"],
     },
