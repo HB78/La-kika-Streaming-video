@@ -18,13 +18,15 @@ const Main = ({ movies }) => {
     <header className="w-full h-[550px] text-white lg:h-[580px]">
       <div className="w-full h-full relative">
         <Image
-          alt="affiche de film parmis les plus populaires"
+          alt={`Affiche du film ${randomMovie?.title}`} // Plus descriptif
           priority={true}
-          quality={70}
+          quality={70} // Votre 70 est très bien
           sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           fill={true}
           src={`https://image.tmdb.org/t/p/w1280/${randomMovie?.backdrop_path}`}
           className="w-full h-full object-cover lg:object-contain"
+          placeholder="blur" // Optionnel mais sympa
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAADAAQDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAbEAADAAMBAQAAAAAAAAAAAAABAgMABAURUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAFxEAAwEAAAAAAAAAAAAAAAAAAAECEf/aAAwDAQACEQMRAD8Anz9voy1dCI2mectSE5ioFCqia+KCwJ8HzGMZPqJb1oPEf//Z" // Optionnel
         />
       </div>
 
