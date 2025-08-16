@@ -52,6 +52,12 @@ const Row = ({ title, moviesFetched, rowID }) => {
           id={"slider" + rowID}
           ref={sliderRef}
           className="flex gap-3 w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide group-hover:block relative"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
+          }}
         >
           {filteredMovies?.map((item) => {
             return <Movie key={item.id} item={item} />;
