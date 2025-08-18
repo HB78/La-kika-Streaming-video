@@ -22,7 +22,7 @@ const Movie = ({ item }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 2424px) 100%"
           priority
           quality={70}
-          className="w-full h-full block object-contain min-md:object-cover"
+          className="w-full h-full block object-cover"
           src={trueId}
           alt="image du film ou de la serie du site de streaming"
         />
