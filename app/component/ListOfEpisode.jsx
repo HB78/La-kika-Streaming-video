@@ -51,7 +51,7 @@ const ListOfEpisode = ({ data }) => {
                   },
                 }}
               >
-                <span className="hover:text-red-600">{item.title}&nbsp;</span>
+                <span className="hover:text-red-600">{item?.title}&nbsp;</span>
               </Link>
             </aside>
           );

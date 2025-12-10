@@ -82,7 +82,7 @@ export const POST = async (req, { params }) => {
 
 export const GET = async (req, { params }) => {
   const id = params.id;
-  console.log("id:", id);
+  console.log("id:test", id);
 
   const serieWithEpisodes = await prisma.serie.findUnique({
     where: { id: id },
