@@ -21,7 +21,7 @@ const EpisodeNumber = ({ sortedEpisodes }) => {
   }
 
   return (
-    <h2 className="text-lg text-gray-400 font-medium mt-2">
+    <h2 className="text-md text-netflix-red font-medium mt-2">
       Épisode {currentEpisodeNumber} sur {sortedEpisodes.length}
     </h2>
   );
