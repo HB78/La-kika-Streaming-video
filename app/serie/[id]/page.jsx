@@ -1,5 +1,6 @@
 import Navbar from "../../component/Navbar";
 import ListOfEpisode from "./../../component/ListOfEpisode";
+import EpisodeNumber from "../../component/EpisodeNumber";
 
 export default async function Home({ params, searchParams }) {
   const id = params.id;
@@ -33,15 +34,6 @@ export default async function Home({ params, searchParams }) {
       })
     : [];
 
-  // Trouver l'index de l'épisode actuel
-  let currentEpisodeNumber = 1;
-  if (episodeId && sortedEpisodes.length > 0) {
-    const currentIndex = sortedEpisodes.findIndex((ep) => ep.id.toString() === episodeId);
-    if (currentIndex !== -1) {
-      currentEpisodeNumber = currentIndex + 1;
-    }
-  }
-
   return (
     <main
       role="main"
@@ -57,11 +49,7 @@ export default async function Home({ params, searchParams }) {
         >
           {responseData?.title}
         </h1>
-        {sortedEpisodes.length > 0 && (
-          <h2 className="text-lg text-gray-400 font-medium mt-2">
-            Épisode {currentEpisodeNumber} sur {sortedEpisodes.length}
-          </h2>
-        )}
+        <EpisodeNumber sortedEpisodes={sortedEpisodes} />
       </div>
 
       <ListOfEpisode data={responseData} />
