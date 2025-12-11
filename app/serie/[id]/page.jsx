@@ -8,15 +8,13 @@ export default async function Home({ params, searchParams }) {
   const response = await fetch(
     `${process.env.NEXTAUTH_URL}/api/episode/${id}`,
     {
-      next: {
-        tags: ["fetchEpisodes"],
-        revalidate: 60,
-      },
-    },
-    {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+      },
+      next: {
+        tags: ["fetchEpisodes"],
+        revalidate: 60,
       },
     }
   );
@@ -38,7 +36,7 @@ export default async function Home({ params, searchParams }) {
   // Trouver l'index de l'épisode actuel
   let currentEpisodeNumber = 1;
   if (episodeId && sortedEpisodes.length > 0) {
-    const currentIndex = sortedEpisodes.findIndex((ep) => ep.id === episodeId);
+    const currentIndex = sortedEpisodes.findIndex((ep) => ep.id.toString() === episodeId);
     if (currentIndex !== -1) {
       currentEpisodeNumber = currentIndex + 1;
     }
