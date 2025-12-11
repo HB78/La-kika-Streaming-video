@@ -1,6 +1,7 @@
 import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { authOptions } from "./../auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +40,8 @@ export const POST = async (req) => {
     const newMovie = await prisma.film.create({
       data: { title: title.trim(), photo, url },
     });
+
+    revalidateTag("fetchMovies");
 
     return new NextResponse("film ajouté avec succes", {
       status: 201,

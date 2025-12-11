@@ -3,6 +3,7 @@ import { extractFileIdFromUrl } from "@/lib/dryApiFunction/extractUrl";
 import { isAdmin } from "@/lib/dryApiFunction/isAdmin";
 import prisma from "@/lib/singleton/prisma";
 import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
@@ -89,6 +90,7 @@ export const DELETE = async (req) => {
     }
 
     revalidatePath("/");
+    revalidateTag("fetchMovies");
 
     return NextResponse.json({
       success: true,

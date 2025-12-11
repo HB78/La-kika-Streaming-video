@@ -1,6 +1,7 @@
 import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { authOptions } from "./../auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,8 @@ export const POST = async (req) => {
     console.log("newSerie:", newSerie);
 
     const serieRegistered = JSON.stringify(newSerie);
+
+    revalidateTag("fetchSeries");
 
     return new NextResponse("serie ajouté avec succes", {
       status: 201,

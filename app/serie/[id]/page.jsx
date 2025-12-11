@@ -1,10 +1,9 @@
+import EpisodeNumber from "../../component/EpisodeNumber";
 import Navbar from "../../component/Navbar";
 import ListOfEpisode from "./../../component/ListOfEpisode";
-import EpisodeNumber from "../../component/EpisodeNumber";
 
 export default async function Home({ params, searchParams }) {
   const id = params.id;
-  const episodeId = searchParams?.id;
 
   const response = await fetch(
     `${process.env.NEXTAUTH_URL}/api/episode/${id}`,

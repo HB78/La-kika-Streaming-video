@@ -1,6 +1,7 @@
 import prisma from "@/lib/singleton/prisma";
 import { getServerSession } from "next-auth/next";
 import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { authOptions } from "./../../auth/[...nextauth]/route";
 
@@ -67,6 +68,7 @@ export const POST = async (req, { params }) => {
     const episodeRegistered = JSON.stringify(newEpisode);
 
     revalidatePath(`https://lakika.vercel.app/serie/${serie.id}`);
+    revalidateTag("fetchEpisodes");
 
     return new NextResponse("episode ajouté avec succes", {
       status: 201,
