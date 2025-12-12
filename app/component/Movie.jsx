@@ -10,7 +10,7 @@ const Movie = ({ item }) => {
     <Link href={link} className="group block">
       <article className="relative w-[280px] md:w-[380px] lg:w-[440px] aspect-[16/10] cursor-pointer">
         {/* Card principale avec rotation 3D */}
-        <div className="relative w-full h-full transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:[transform:rotateY(-4deg)_rotateX(3deg)_translateZ(20px)] group-hover:scale-[1.02]">
+        <div className="relative w-full h-full transition-all duration-700 ease-out group-hover:[transform:rotateY(-4deg)_rotateX(3deg)_translateZ(20px)] group-hover:scale-[1.02]">
           {/* Ombre dynamique */}
           <div className="absolute -inset-4 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-20 blur-2xl bg-red-600/40" />
 
@@ -72,16 +72,12 @@ const Movie = ({ item }) => {
 
               {/* Titre */}
               <h3
-                className="text-white text-lg md:text-2xl lg:text-3xl leading-tight tracking-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-500 delay-75"
+                className="text-white text-lg md:text-xl lg:text-2xl leading-tight tracking-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-500 delay-75 truncate"
                 style={{
                   fontFamily:
                     "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
                   fontWeight: 700,
                   textShadow: "0 4px 30px rgba(0,0,0,0.9)",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
                 }}
               >
                 {item?.title}
