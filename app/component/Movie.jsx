@@ -74,9 +74,6 @@ const Movie = ({ item }) => {
               <h3
                 className="text-white text-lg md:text-xl lg:text-2xl leading-tight tracking-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-500 delay-75 truncate"
                 style={{
-                  fontFamily:
-                    "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
-                  fontWeight: 700,
                   textShadow: "0 4px 30px rgba(0,0,0,0.9)",
                 }}
               >
