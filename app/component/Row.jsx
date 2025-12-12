@@ -51,7 +51,7 @@ const Row = ({ title, moviesFetched, rowID }) => {
         <div
           id={"slider" + rowID}
           ref={sliderRef}
-          className="flex gap-3 w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide group-hover:block relative"
+          className="flex gap-3 w-full h-full overflow-x-scroll overflow-y-hidden whitespace-nowrap scroll-smooth scrollbar-hide group-hover:block relative"
           style={{
             maskImage:
               "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
