@@ -16,7 +16,7 @@ export const fetchMovies = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   return response.json();
@@ -37,7 +37,7 @@ export const fetchSeries = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
   return response.json();
 };
@@ -54,7 +54,7 @@ export const fetchOneSerie = async (id) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {
