@@ -1,5 +1,5 @@
 --- <div align="center">  
- <img src="./public/logo.png" alt="Lakika Logo" width="200"/>
+ <img src="./public/k.jpg" alt="Lakika Logo" width="200"/>
 
 # Lakika
 
