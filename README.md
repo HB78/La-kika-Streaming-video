@@ -1,5 +1,4 @@
-● Voilà le README :  
- --- <div align="center">  
+--- <div align="center">  
  <img src="./public/logo.png" alt="Lakika Logo" width="200"/>
 
 # Lakika
