@@ -37,7 +37,7 @@ const InputSearch = ({ title, setSearchTerm, searchTerm }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Rechercher un film..."
             aria-label="Rechercher un film"
-            className="rounded-full bg-gray-700 p-3 text-white focus:border-red-500 focus:outline-none focus:border"
+            className="rounded-full bg-gray-700 p-2 text-white focus:border-red-500 focus:outline-none focus:border"
           />
         </div>
       ) : (
