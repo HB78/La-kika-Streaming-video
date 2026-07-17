@@ -3,6 +3,7 @@ import { CardHoverEffectDemo } from "../component/CardEffectDemo";
 import Navbar from "../component/Navbar";
 import { SparklesPreview } from "../component/SparklesPreview";
 import { SpotlightPreview } from "../component/SpotlightPreview";
+import Footer from "../component/footer/Footer";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <SparklesPreview />
       <CardHoverEffectDemo />
       <SpotlightPreview />
+      <Footer />
     </main>
   );
 }

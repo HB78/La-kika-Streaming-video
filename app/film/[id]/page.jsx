@@ -1,3 +1,4 @@
+import Footer from "@/app/component/footer/Footer";
 import VideoPlayer from "@/app/component/VideoPlayer";
 import Navbar from "../../component/Navbar";
 
@@ -14,7 +15,7 @@ export default async function Home({ params }) {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -33,6 +34,7 @@ export default async function Home({ params }) {
         <article className="flex justify-center items-center">
           <VideoPlayer url={responseData?.url} />
         </article>
+        <Footer />
       </main>
     </>
   );

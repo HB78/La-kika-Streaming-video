@@ -25,7 +25,7 @@ export default async function Home() {
 
   //on map sur le results de chaque requete pour les mettre en format json()
   const allMovies = await Promise.all(
-    allResponses.map((response) => response.json())
+    allResponses.map((response) => response.json()),
   );
   //le resultat donne un objet pour reponse du fetch et les mets dans un tableau pour pouvoir les maper
 

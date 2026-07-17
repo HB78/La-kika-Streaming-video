@@ -1,3 +1,4 @@
+import Footer from "@/app/component/footer/Footer";
 import EpisodeNumber from "../../component/EpisodeNumber";
 import Navbar from "../../component/Navbar";
 import ListOfEpisode from "./../../component/ListOfEpisode";
@@ -16,7 +17,7 @@ export default async function Home({ params, searchParams }) {
         tags: ["fetchEpisodes"],
         revalidate: 60,
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -52,6 +53,7 @@ export default async function Home({ params, searchParams }) {
       </div>
 
       <ListOfEpisode data={responseData} />
+      <Footer />
     </main>
   );
 }

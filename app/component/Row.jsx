@@ -12,7 +12,7 @@ const Row = ({ title, moviesFetched, rowID }) => {
   //on met le useMemo pour ne pas recréer le tableau de filtre à chaque fois que le terme de recherche change et a cause de la fonction slideLeft et slideRight
   const filteredMovies = useMemo(() => {
     return moviesFetched.filter((movie) =>
-      movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+      movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [moviesFetched, searchTerm]);
 
