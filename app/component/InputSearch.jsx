@@ -21,7 +21,7 @@ const InputSearch = ({ title, setSearchTerm, searchTerm }) => {
             type="button"
             onClick={toggleSearch}
             aria-label="Fermer la recherche"
-            className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 p-3"
+            className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           >
             <IoCloseCircle
               aria-hidden="true"
@@ -47,7 +47,7 @@ const InputSearch = ({ title, setSearchTerm, searchTerm }) => {
           aria-label="Ouvrir la recherche"
           aria-expanded={userIsSearching}
           aria-controls="search-input"
-          className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+          className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 p-3"
         >
           <CiSearch aria-hidden="true" className="text-white" size={18} />
         </button>
