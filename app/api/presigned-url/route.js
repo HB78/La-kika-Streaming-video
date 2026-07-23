@@ -36,7 +36,7 @@ export async function POST(req) {
     if (!fileName || !fileType) {
       return NextResponse.json(
         { error: "fileName and fileType are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(req) {
     if (fileSize && fileSize > MAX_SIZE) {
       return NextResponse.json(
         { error: `File too large. Maximum size is 5GB` },
-        { status: 413 }
+        { status: 413 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function POST(req) {
         error: "Failed to generate presigned URL",
         details: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

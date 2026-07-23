@@ -12,7 +12,6 @@ export default async function Home() {
   const responseDataSeries = await fetchSeries();
   //on met toutes les requetes dans un tableau
   const urls = [
-    requests.requestUpcoming,
     requests.requestTrending,
     requests.requestPopular,
   ];
@@ -35,15 +34,13 @@ export default async function Home() {
 
   //au final j'ai tout harmonisé mais il faudrait revoir le code pour le rendre plus propreut biennettoyer la data avant de la passer en props en les verifiant dans le console.log()
 
-  let upcoming = allMovies[0].results;
-  let trending = allMovies[1].results;
-  let moviesPopular = allMovies[2].results.splice(0, 7);
+  let trending = allMovies[0].results;
+  let moviesPopular = allMovies[1].results.splice(0, 7);
 
   return (
     <main className="w-full h-screen">
       <Navbar />
       <Main movies={moviesPopular} />
-      <Row rowID="1" title="UpComing" moviesFetched={upcoming} />
       <Row rowID="2" title="Popular" moviesFetched={moviesPopular} />
       <Row rowID="3" title="Trending" moviesFetched={trending} />
       <Row rowID="6" title="Films" moviesFetched={responseDataMovies} />
