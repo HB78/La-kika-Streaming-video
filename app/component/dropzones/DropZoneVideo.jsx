@@ -141,24 +141,24 @@ export function DropZoneVideo({ getInfo }) {
       case FILE_STATUS.PENDING:
         return {
           icon: Clock,
-          color: "text-gray-500",
-          bgColor: "bg-gray-50",
-          text: "Queued...",
+          color: "text-netflix-gray",
+          bgColor: "bg-white/5",
+          text: "En file…",
           showProgress: false,
         };
       case FILE_STATUS.GETTING_URL:
         return {
           icon: Upload,
-          color: "text-blue-500",
-          bgColor: "bg-blue-50",
-          text: "Preparing...",
+          color: "text-netflix-light",
+          bgColor: "bg-white/5",
+          text: "Préparation…",
           showProgress: false,
         };
       case FILE_STATUS.UPLOADING:
         return {
           icon: Upload,
-          color: "text-blue-500",
-          bgColor: "bg-blue-50",
+          color: "text-netflix-light",
+          bgColor: "bg-white/5",
           text: `${status.progress}%`,
           showProgress: true,
           progress: status.progress,
@@ -167,24 +167,24 @@ export function DropZoneVideo({ getInfo }) {
         return {
           icon: CheckCircle,
           color: "text-green-500",
-          bgColor: "bg-green-50",
-          text: "✅ Done",
+          bgColor: "bg-green-500/10",
+          text: "✓ Envoyée",
           showProgress: false,
         };
       case FILE_STATUS.ERROR:
         return {
           icon: AlertCircle,
           color: "text-red-500",
-          bgColor: "bg-red-50",
-          text: "❌ Failed",
+          bgColor: "bg-red-500/15",
+          text: "✗ Échec",
           showProgress: false,
         };
       default:
         return {
           icon: Clock,
-          color: "text-gray-500",
-          bgColor: "bg-gray-50",
-          text: "Waiting...",
+          color: "text-netflix-gray",
+          bgColor: "bg-white/5",
+          text: "En attente…",
           showProgress: false,
         };
     }
@@ -195,46 +195,33 @@ export function DropZoneVideo({ getInfo }) {
       <div
         {...getRootProps({
           className: cn(
-            "w-full p-6 mt-6 border-dashed rounded-xl border-2 transition-all duration-200 cursor-pointer",
+            "w-full p-5 mt-2 border-dashed rounded-xl border-2 transition-colors duration-200 cursor-pointer",
             isDragActive
-              ? "border-blue-500 bg-blue-50 scale-[1.02]"
-              : "border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:bg-blue-50/50"
+              ? "border-netflix-red bg-netflix-red/10"
+              : "border-white/15 bg-white/[0.02] hover:border-netflix-red/60"
           ),
         })}
       >
         <input {...getInputProps()} />
 
         {isDragActive ? (
-          <div className="flex flex-col items-center gap-3">
-            <Upload className="w-16 h-16 text-blue-500 animate-bounce" />
-            <p className="text-lg font-medium text-blue-600">
-              Drop your videos here!
-            </p>
-          </div>
+          <p className="text-center text-netflix-red py-4">
+            Déposez vos vidéos ici…
+          </p>
         ) : (
-          <div className="flex flex-col items-center gap-5">
-            <div className="flex flex-col items-center gap-3">
-              <VideoIcon className="w-16 h-16 text-blue-400" />
-              <div className="text-center">
-                <p className="text-lg font-medium text-gray-700">
-                  Drag & drop your videos here
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Supports: MP4, MOV, AVI, MKV, WebM • Max size: 5GB
-                </p>
-                <p className="text-xs text-blue-600 mt-1 font-medium">
-                  ⚡ Direct upload to cloud (bypasses server limits)
-                </p>
-              </div>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <VideoIcon className="w-8 h-8 text-netflix-gray" />
+              <p className="text-sm text-netflix-light">Glissez-déposez la vidéo</p>
+              <p className="text-xs text-netflix-gray">MP4 · MOV · MKV — max 5 Go</p>
             </div>
 
             <Button
               variant="outline"
-              size="lg"
-              className="border-blue-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              className="border-white/15 bg-transparent text-netflix-light hover:border-netflix-red/60 hover:bg-white/5 hover:text-white"
             >
               <Upload className="w-4 h-4 mr-2" />
-              Select Videos
+              Choisir une vidéo
             </Button>
           </div>
         )}
@@ -242,12 +229,12 @@ export function DropZoneVideo({ getInfo }) {
 
       {/* Liste des fichiers avec status détaillé */}
       {files.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-sm font-medium text-gray-700 mb-4">
-            Upload Progress ({files.length} file{files.length > 1 ? "s" : ""})
+        <div className="mt-5">
+          <h3 className="text-xs font-medium text-netflix-gray mb-3">
+            Envoi ({files.length} fichier{files.length > 1 ? "s" : ""})
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {files.map(({ file }, index) => {
               const fileUrl = urls[index];
               const fileKey = fileUrl ? extractFileIdFromUrl(fileUrl) : null;
@@ -259,16 +246,15 @@ export function DropZoneVideo({ getInfo }) {
                 <div
                   key={`${file.name}-${index}`}
                   className={cn(
-                    "relative p-4 rounded-lg border transition-all duration-200",
-                    statusInfo.bgColor,
-                    "hover:shadow-md"
+                    "relative p-3 rounded-lg border border-white/10 transition-all duration-200",
+                    statusInfo.bgColor
                   )}
                 >
                   {/* Barre de progression en arrière-plan */}
                   {statusInfo.showProgress && (
                     <div className="absolute inset-0 rounded-lg overflow-hidden">
                       <div
-                        className="h-full bg-blue-200/50 transition-all duration-300 ease-out"
+                        className="h-full bg-netflix-red/20 transition-all duration-300 ease-out"
                         style={{ width: `${statusInfo.progress}%` }}
                       />
                     </div>
@@ -285,7 +271,7 @@ export function DropZoneVideo({ getInfo }) {
                     {/* Info du fichier */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium text-gray-900 truncate pr-2">
+                        <h4 className="text-sm font-medium text-netflix-light truncate pr-2">
                           {file.name}
                         </h4>
 
@@ -294,7 +280,7 @@ export function DropZoneVideo({ getInfo }) {
                           onClick={() => handleDelete(fileKey, file.name)}
                           variant="ghost"
                           size="sm"
-                          className="h-6 w-6 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full flex-shrink-0"
+                          className="h-6 w-6 p-0 text-netflix-gray hover:text-red-500 hover:bg-red-500/10 rounded-full flex-shrink-0"
                           disabled={isPending}
                         >
                           <XIcon className="w-3 h-3" />
@@ -302,8 +288,8 @@ export function DropZoneVideo({ getInfo }) {
                       </div>
 
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-gray-500">
-                          {fileSizeMB} MB
+                        <span className="text-xs text-netflix-gray">
+                          {fileSizeMB} Mo
                         </span>
                         <span
                           className={cn(
@@ -317,9 +303,9 @@ export function DropZoneVideo({ getInfo }) {
 
                       {/* Barre de progression détaillée */}
                       {statusInfo.showProgress && (
-                        <div className="mt-2 w-full bg-gray-200 rounded-full h-1">
+                        <div className="mt-2 w-full bg-white/10 rounded-full h-1">
                           <div
-                            className="bg-blue-500 h-1 rounded-full transition-all duration-300 ease-out"
+                            className="bg-netflix-red h-1 rounded-full transition-all duration-300 ease-out"
                             style={{ width: `${statusInfo.progress}%` }}
                           />
                         </div>
@@ -333,22 +319,6 @@ export function DropZoneVideo({ getInfo }) {
         </div>
       )}
 
-      {/* Stats globales */}
-      <div className="mt-6 flex items-center justify-between text-xs text-gray-500 bg-gray-50 px-4 py-2 rounded-lg">
-        <div>
-          Files: {files.length} | URLs: {urls.length}
-        </div>
-        {files.length > 0 && (
-          <div>
-            Total:{" "}
-            {(
-              files.reduce((acc, { file }) => acc + file.size, 0) /
-              (1024 * 1024)
-            ).toFixed(1)}{" "}
-            MB
-          </div>
-        )}
-      </div>
     </>
   );
 }

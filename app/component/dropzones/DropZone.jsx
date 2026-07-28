@@ -91,6 +91,11 @@ export function DropZone({ getInfo }) {
             setFiles((prevFiles) =>
               prevFiles.filter((item) => item.file.name !== fileName)
             );
+            // On prévient le parent que l'affiche n'existe plus (sinon l'aperçu
+            // de gauche garde l'ancienne URL). getInfo("") remet photoUrl à vide.
+            // if (getInfo) : on vérifie que getInfo contient bien quelque chose
+            // (qu'il a été passé en prop) avant de l'appeler.
+            if (getInfo) getInfo("");
             toast.success(`File ${fileName} deleted successfully!`);
           } else {
             toast.error(result?.message || "Failed to delete file");
@@ -100,6 +105,9 @@ export function DropZone({ getInfo }) {
           setFiles((prevFiles) =>
             prevFiles.filter((item) => item.file.name !== fileName)
           );
+          // Idem : on annule l'affiche côté parent.
+          // if (getInfo) : on vérifie que getInfo contient quelque chose avant de l'appeler.
+          if (getInfo) getInfo("");
           toast.success(`Removed ${fileName} from queue`);
         }
       } catch (error) {
@@ -162,26 +170,26 @@ export function DropZone({ getInfo }) {
       <div
         {...getRootProps({
           className:
-            "w-[100%] p-3 mt-6 border-dashed rounded-lg border-2 lg:w-full border-violet-200 hover:border-violet-400 transition-colors duration-200 bg-violet-50/50 cursor-pointer",
+            "w-[100%] p-5 mt-2 border-dashed rounded-xl border-2 lg:w-full border-white/15 hover:border-netflix-red/60 transition-colors duration-200 bg-white/[0.02] cursor-pointer",
         })}
       >
         <input {...getInputProps()} />
         {isDragActive ? (
-          <p className="text-center text-violet-600">
-            Drop your images here ...
+          <p className="text-center text-netflix-red py-4">
+            Déposez vos images ici…
           </p>
         ) : (
-          <div className="flex flex-col items-center gap-y-5">
+          <div className="flex flex-col items-center gap-y-4">
             <div className="flex flex-col items-center gap-2">
-              <ImageIcon className="w-12 h-12 text-violet-400" />
-              <p className="text-gray-600">Drag 'n' drop your images here</p>
-              <p className="text-xs text-gray-500">Max size: 10MB</p>
+              <ImageIcon className="w-8 h-8 text-netflix-gray" />
+              <p className="text-sm text-netflix-light">Glissez-déposez l&apos;affiche</p>
+              <p className="text-xs text-netflix-gray">PNG · JPG — max 10 Mo</p>
             </div>
             <Button
               variant="outline"
-              className="border-violet-200 hover:border-violet-400 hover:bg-violet-50 hover:text-violet-600"
+              className="border-white/15 bg-transparent text-netflix-light hover:border-netflix-red/60 hover:bg-white/5 hover:text-white"
             >
-              Select Images
+              Choisir une image
             </Button>
           </div>
         )}
@@ -212,8 +220,8 @@ export function DropZone({ getInfo }) {
                         "object-cover rounded-lg size-16 cursor-pointer shadow-sm shadow-green-300"
                       )}
                     />
-                    <div className="mt-1 text-xs text-center text-green-600">
-                      ✓ Uploaded
+                    <div className="mt-1 text-xs text-center text-green-500">
+                      ✓ Envoyée
                     </div>
                   </>
                 ) : (
@@ -222,24 +230,24 @@ export function DropZone({ getInfo }) {
                     className={cn(
                       "flex flex-col items-center justify-center w-full h-16 rounded-lg transition-all",
                       status === FILE_STATUS.UPLOADING &&
-                        "bg-violet-100 animate-pulse",
-                      status === FILE_STATUS.ERROR && "bg-red-100",
-                      status === FILE_STATUS.PENDING && "bg-violet-50"
+                        "bg-white/10 animate-pulse",
+                      status === FILE_STATUS.ERROR && "bg-red-500/15",
+                      status === FILE_STATUS.PENDING && "bg-white/5"
                     )}
                   >
                     <ImageIcon
                       className={cn(
                         "w-8 h-8",
-                        status === FILE_STATUS.UPLOADING && "text-violet-500",
+                        status === FILE_STATUS.UPLOADING && "text-netflix-light",
                         status === FILE_STATUS.ERROR && "text-red-500",
-                        status === FILE_STATUS.PENDING && "text-violet-400"
+                        status === FILE_STATUS.PENDING && "text-netflix-gray"
                       )}
                     />
 
                     {/* Loading spinner pour l'upload */}
                     {status === FILE_STATUS.UPLOADING && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-6 h-6 border-2 border-netflix-red border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     )}
                   </div>
@@ -248,17 +256,17 @@ export function DropZone({ getInfo }) {
                 {/* Status text */}
                 <div className="mt-1 text-xs text-center">
                   {status === FILE_STATUS.PENDING && (
-                    <span className="text-gray-500">Preparing...</span>
+                    <span className="text-netflix-gray">Préparation…</span>
                   )}
                   {status === FILE_STATUS.UPLOADING && (
-                    <span className="text-violet-500">Uploading...</span>
+                    <span className="text-netflix-light">Envoi…</span>
                   )}
                   {status === FILE_STATUS.ERROR && (
-                    <span className="text-red-500">✗ Failed</span>
+                    <span className="text-red-500">✗ Échec</span>
                   )}
                 </div>
 
-                <div className="mt-1 text-xs text-gray-400 text-center truncate max-w-[80px]">
+                <div className="mt-1 text-xs text-netflix-gray text-center truncate max-w-[80px]">
                   {/* file.name est utilisé ici uniquement pour l'affichage du nom du fichier à l'utilisateur */}
                   {file.name}
                 </div>
@@ -285,12 +293,6 @@ export function DropZone({ getInfo }) {
             </div>
           );
         })}
-      </div>
-
-      {/* Debug info */}
-      <div className="mt-4 text-xs text-gray-500">
-        Files in state: {files.length} | Completed:{" "}
-        {files.filter((f) => f.status === FILE_STATUS.COMPLETED).length}
       </div>
     </>
   );
