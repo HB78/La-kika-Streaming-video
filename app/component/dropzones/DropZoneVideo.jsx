@@ -46,12 +46,12 @@ export function DropZoneVideo({ getInfo }) {
           if (result?.success) {
             // Supprimer de la liste des fichiers
             setFiles((prevFiles) =>
-              prevFiles.filter((item) => item.file.name !== fileName)
+              prevFiles.filter((item) => item.file.name !== fileName),
             );
             // Supprimer de la liste des URLs
             setUrls((prevUrls) => {
               const fileIndex = files.findIndex(
-                (f) => f.file.name === fileName
+                (f) => f.file.name === fileName,
               );
               return prevUrls.filter((_, index) => index !== fileIndex);
             });
@@ -64,7 +64,7 @@ export function DropZoneVideo({ getInfo }) {
         } else {
           // Juste supprimer de la queue locale
           setFiles((prevFiles) =>
-            prevFiles.filter((item) => item.file.name !== fileName)
+            prevFiles.filter((item) => item.file.name !== fileName),
           );
           resetFileStatus(fileName);
           toast.success(`Removed ${fileName} from queue`);
@@ -86,7 +86,7 @@ export function DropZoneVideo({ getInfo }) {
           size: f.size,
           sizeMB: (f.size / (1024 * 1024)).toFixed(2) + " MB",
           type: f.type,
-        }))
+        })),
       );
 
       if (acceptedFiles.length > 0) {
@@ -108,7 +108,7 @@ export function DropZoneVideo({ getInfo }) {
         }
       }
     },
-    [uploadFile]
+    [uploadFile],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -198,7 +198,7 @@ export function DropZoneVideo({ getInfo }) {
             "w-full p-5 mt-2 border-dashed rounded-xl border-2 transition-colors duration-200 cursor-pointer",
             isDragActive
               ? "border-netflix-red bg-netflix-red/10"
-              : "border-white/15 bg-white/[0.02] hover:border-netflix-red/60"
+              : "border-white/15 bg-white/[0.02] hover:border-netflix-red/60",
           ),
         })}
       >
@@ -212,11 +212,16 @@ export function DropZoneVideo({ getInfo }) {
           <div className="flex flex-col items-center gap-4">
             <div className="flex flex-col items-center gap-2">
               <VideoIcon className="w-8 h-8 text-netflix-gray" />
-              <p className="text-sm text-netflix-light">Glissez-déposez la vidéo</p>
-              <p className="text-xs text-netflix-gray">MP4 · MOV · MKV — max 5 Go</p>
+              <p className="text-sm text-netflix-light">
+                Glissez-déposez la vidéo
+              </p>
+              <p className="text-xs text-netflix-gray">
+                MP4 · MOV · MKV — max 5 Go
+              </p>
             </div>
 
             <Button
+              type="button"
               variant="outline"
               className="border-white/15 bg-transparent text-netflix-light hover:border-netflix-red/60 hover:bg-white/5 hover:text-white"
             >
@@ -247,7 +252,7 @@ export function DropZoneVideo({ getInfo }) {
                   key={`${file.name}-${index}`}
                   className={cn(
                     "relative p-3 rounded-lg border border-white/10 transition-all duration-200",
-                    statusInfo.bgColor
+                    statusInfo.bgColor,
                   )}
                 >
                   {/* Barre de progression en arrière-plan */}
@@ -277,6 +282,7 @@ export function DropZoneVideo({ getInfo }) {
 
                         {/* Bouton de suppression */}
                         <Button
+                          type="button"
                           onClick={() => handleDelete(fileKey, file.name)}
                           variant="ghost"
                           size="sm"
@@ -294,7 +300,7 @@ export function DropZoneVideo({ getInfo }) {
                         <span
                           className={cn(
                             "text-xs font-medium",
-                            statusInfo.color
+                            statusInfo.color,
                           )}
                         >
                           {statusInfo.text}
@@ -318,7 +324,6 @@ export function DropZoneVideo({ getInfo }) {
           </div>
         </div>
       )}
-
     </>
   );
 }

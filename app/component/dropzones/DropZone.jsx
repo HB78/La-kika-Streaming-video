@@ -186,6 +186,7 @@ export function DropZone({ getInfo }) {
               <p className="text-xs text-netflix-gray">PNG · JPG — max 10 Mo</p>
             </div>
             <Button
+              type="button"
               variant="outline"
               className="border-white/15 bg-transparent text-netflix-light hover:border-netflix-red/60 hover:bg-white/5 hover:text-white"
             >
@@ -281,6 +282,7 @@ export function DropZone({ getInfo }) {
               */}
               <div className="absolute -top-2 -right-2 opacity-100 group-hover:opacity-100 transition-opacity duration-300 bg-red-500 rounded-full">
                 <Button
+                  type="button"
                   onClick={() => handleDelete(fileKey, file.name)}
                   variant="destructive"
                   size="sm"
